@@ -19,7 +19,7 @@ POST   /movies/<movie_id>/genres/<genre_id>
 DELETE /movies/<movie_id>/genres/<genre_id>
 """
 
-from repositories.mysql import movies_repository
+from repositories.mysql.customer_repository import movies_repository
 from flask import jsonify
 from . import bp
 

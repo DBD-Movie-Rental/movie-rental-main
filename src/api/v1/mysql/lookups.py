@@ -18,7 +18,7 @@ GET  /memberships
 
 from flask import jsonify
 from . import bp
-from repositories.mysql import lookups_repository
+from repositories.mysql.customer_repository import lookups_repository
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Genres

@@ -1,7 +1,6 @@
 from flask import jsonify
 from . import bp
-from repositories.mysql import rentals_repository
-
+from repositories.mysql.customer_repository import rentals_repository
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Rentals (CRUD)

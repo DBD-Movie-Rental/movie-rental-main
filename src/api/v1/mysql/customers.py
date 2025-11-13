@@ -11,7 +11,7 @@ PUT    /customers/<customer_id>
 DELETE /customers/<customer_id>
 """
 
-from repositories.mysql import customers_repository
+from repositories.mysql.customer_repository import customers_repository
 from flask import jsonify
 from . import bp
 

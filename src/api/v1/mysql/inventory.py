@@ -26,7 +26,7 @@ DELETE /locations/<location_id>
 """
 
 from flask import jsonify, request
-from repositories.mysql import inventory_repository
+from repositories.mysql.customer_repository import inventory_repository
 from . import bp
 
 # ─────────────────────────────────────────────────────────────────────────────

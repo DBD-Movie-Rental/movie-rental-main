@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from src.app.repositories.mysql.repository import CustomerRepository
+from src.repositories.mysql.customer_repository import CustomerRepository
 
 bp = Blueprint("mysql_routes", __name__)
 repo = CustomerRepository()

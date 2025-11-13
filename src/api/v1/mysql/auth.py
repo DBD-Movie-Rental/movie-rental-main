@@ -1,6 +1,6 @@
 from . import bp
 from flask import request, jsonify
-from repositories.mysql import customer_repository, employee_repository
+from repositories.mysql.customer_repository import customers_repository
 
 @bp.route("/login", methods=["POST"])
 def login():
