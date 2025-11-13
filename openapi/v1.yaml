@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: Movie Rental API
+  version: "1.0.0"
+paths:
+  /api/v1/mysql/health:
+    get:
+      summary: MySQL health
+      responses:
+        "200":
+          description: OK
+  /api/v1/mysql/customers:
+    get:
+      summary: List customers
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Create customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name: { type: string }
+                last_name:  { type: string }
+                email:      { type: string, format: email }
+                phone_number: { type: string }
+              required: [first_name, last_name, email, phone_number]
+      responses:
+        "201":
+          description: Created

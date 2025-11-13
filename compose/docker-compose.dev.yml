@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_movierental
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: movie_rental
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
+    ports:
+      - "3307:3306"
+    volumes:
+      - ../db/mysql/sql:/docker-entrypoint-initdb.d:ro
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:
