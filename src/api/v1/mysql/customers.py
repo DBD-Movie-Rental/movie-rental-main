@@ -11,9 +11,11 @@ PUT    /customers/<customer_id>
 DELETE /customers/<customer_id>
 """
 
-from repositories.mysql.customer_repository import customers_repository
+from src.repositories.mysql.customer_repository import CustomerRepository
 from flask import jsonify
 from . import bp
+
+customers_repository = CustomerRepository()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Customers (CRUD)

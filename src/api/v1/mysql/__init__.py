@@ -1,4 +1,4 @@
-from flask import Blueprint
+""" from flask import Blueprint
 
 bp = Blueprint("mysql_api", __name__, url_prefix="/api/v1/mysql")
 
@@ -9,4 +9,4 @@ from . import inventory
 from . import lookups
 from . import movies
 from . import rentals
-from . import auth
+from . import auth """

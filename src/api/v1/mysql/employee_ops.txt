@@ -19,7 +19,9 @@ GET    /health
 
 from flask import jsonify
 from . import bp
-from repositories.mysql.customer_repository import employee_repository
+from repositories.mysql.customer_repository import EmployeeRepository
+
+employee_repository = EmployeeRepository()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Employees (CRUD)
