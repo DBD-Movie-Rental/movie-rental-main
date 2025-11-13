@@ -20,6 +20,9 @@ A fully functional MySQL database for a movie rental system. The project include
 git clone https://github.com/DBD-Movie-Rental/movie-rental-main.git
 cd movie-rental-main
 
+python3 -m venv .venv
+source .venv/bin/activate
+
 docker compose -f compose/docker-compose.dev.yml down -v
 docker compose -f compose/docker-compose.dev.yml up -d
 

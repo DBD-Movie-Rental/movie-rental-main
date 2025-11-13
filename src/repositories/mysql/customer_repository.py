@@ -1,5 +1,5 @@
 from sqlalchemy import text
-from .orm import SessionLocal, Customer
+from .orm_models.customer_orm import SessionLocal, Customer
 
 class CustomerRepository:
     def get_all_customers(self):

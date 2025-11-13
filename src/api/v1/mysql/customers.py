@@ -19,8 +19,6 @@ from . import bp
 # Customers (CRUD)
 # ─────────────────────────────────────────────────────────────────────────────
 
-@jwt_required()
-@jwt_roles_required(["admin", "user"])
 @bp.route("/customers", methods=["GET"])
 def get_customers():
     customers = customers_repository.get_all_customers()
