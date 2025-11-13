@@ -36,7 +36,9 @@ The goal is to showcase practical, side-by-side implementations using ORM/ODM/OG
 > Python/virtualenv are only needed if you want to run the API directly on your host.  
 > For the Docker setup below, everything runs in containers.
 
-### Setup
+## Setup (local)
+
+Run the Flask API on your machine, and MySQL in Docker.
 
 ```bash
 # 1. Clone the repository
@@ -46,17 +48,47 @@ cd movie-rental-main
 # 2. Create and activate virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
+
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 3. Start containers
-docker compose -f compose/docker-compose.dev.yml down -v
-docker compose -f compose/docker-compose.dev.yml up -d
+# 4. Start only the MySQL container
+docker compose -f compose/docker-compose.dev.yml up -d mysql
 
-# Build and start services (API + MySQL)
+# 5. Run the Flask API locally
+python -m src.app
+```
+
+API will be available at: `http://localhost:5004`  
+MySQL will be available at: `localhost:3307` (user: `app`, password: `app`, db: `movie_rental`)
+
+
+## Setup (Docker – API + MySQL)
+
+Run both the API and MySQL inside Docker.
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/DBD-Movie-Rental/movie-rental-main.git
+cd movie-rental-main
+
+# 2. Build and start all services (API + MySQL)
 docker compose -f compose/docker-compose.dev.yml up --build -d
 
-# Optional check running containers
+# 3. (Optional) Check running containers
 docker ps
+```
+
+API: `http://localhost:5004/api/v1/health`  
+MySQL: `localhost:3307`
+
+
+## Docker build only
+
+If you just want to (re)build images without starting containers:
+
+```bash
+docker compose -f compose/docker-compose.dev.yml build
 ```
 
 ---
