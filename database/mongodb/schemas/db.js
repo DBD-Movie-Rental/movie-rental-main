@@ -7,37 +7,37 @@ db.createCollection("customers", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["firstName", "lastName", "email", "createdAt"],
+      required: ["firstName", "lastName", "email", "createdAt", "address","membershipPlan"],
       properties: {
-        firstName: { bsonType: "string" },
-        lastName: { bsonType: "string" },
-        email: { bsonType: "string" },
+        firstName:   { bsonType: "string" },
+        lastName:    { bsonType: "string" },
+        email:       { bsonType: "string" },
         phoneNumber: { bsonType: ["string","null"] },
-        createdAt: { bsonType: "date" },
+        createdAt:   { bsonType: "date" },
+
         address: {
           bsonType: "object",
           required: ["address", "city", "postCode"],
           properties: {
-            address: { bsonType: "string" },
-            city: { bsonType: "string" },
+            address:  { bsonType: "string" },
+            city:     { bsonType: "string" },
             postCode: { bsonType: "string" }
           }
         },
-        membership: {
-          bsonType: ["object","null"],
+
+        membershipPlan: {
+          bsonType: "object",
+          required: ["membershipType","startsOn","monthlyCostDkk"],
           properties: {
-            membershipCode: { bsonType: "string" }, // ref membershipTypes.code
-            startsOn: { bsonType: ["date","null"] },
-            endsOn: { bsonType: ["date","null"] },
-            snapshot: {
-              bsonType: ["object","null"],
-              properties: {
-                monthlyCostDkk: { bsonType: ["decimal","null"] },
-                benefits: { bsonType: "array", items: { bsonType: "string" } }
-              }
-            }
+            membershipType: {
+              enum: ["GOLD","SILVER","BRONZE"] // ref membershipTypes.type
+            },
+            startsOn: { bsonType: "date" },
+            endsOn:   { bsonType: ["date","null"] },
+            monthlyCostDkk: { bsonType: "decimal" }
           }
         },
+
         recentRentals: {
           bsonType: "array",
           maxItems: 5,
@@ -45,8 +45,8 @@ db.createCollection("customers", {
             bsonType: "object",
             required: ["rentalId", "status", "rentedAtDatetime"],
             properties: {
-              rentalId: { bsonType: "objectId" },
-              status: { enum: ["RESERVED","OPEN","RETURNED","LATE","CANCELLED"] },
+              rentalId:         { bsonType: "objectId" },
+              status:           { enum: ["RESERVED","OPEN","RETURNED","LATE","CANCELLED"] },
               rentedAtDatetime: { bsonType: "date" }
             }
           }
@@ -57,10 +57,13 @@ db.createCollection("customers", {
 });
 
 // Case-insensitive unique email index
-db.customers.createIndex({ email: 1 }, { unique: true, collation: { locale: "en", strength: 2 } });
+db.customers.createIndex(
+  { email: 1 },
+  { unique: true, collation: { locale: "en", strength: 2 } }
+);
 
 // -----------------------------------------------------------------------------
-/* promoCodes (lookup) */
+// promoCodes (lookup)
 // -----------------------------------------------------------------------------
 db.createCollection("promoCodes", {
   validator: {
@@ -68,12 +71,16 @@ db.createCollection("promoCodes", {
       bsonType: "object",
       required: ["code"],
       properties: {
-        code: { bsonType: "string" },
+        code:        { bsonType: "string" },
         description: { bsonType: ["string","null"] },
-        percentOff: { bsonType: ["decimal","null"], minimum: NumberDecimal("0"), maximum: NumberDecimal("100") },
+        percentOff:  {
+          bsonType: ["decimal","null"],
+          minimum: NumberDecimal("0"),
+          maximum: NumberDecimal("100")
+        },
         amountOffDkk: { bsonType: ["decimal","null"] },
-        startsAt: { bsonType: ["date","null"] },
-        endsAt: { bsonType: ["date","null"] }
+        startsAt:     { bsonType: ["date","null"] },
+        endsAt:       { bsonType: ["date","null"] }
       }
     }
   }
@@ -82,45 +89,49 @@ db.createCollection("promoCodes", {
 db.promoCodes.createIndex({ code: 1 }, { unique: true });
 
 // -----------------------------------------------------------------------------
-/* membershipTypes (lookup) */
+// membershipTypes (lookup)
 // -----------------------------------------------------------------------------
 db.createCollection("membershipTypes", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["code","defaultMonthlyCostDkk","isActive"],
+      required: ["type","monthlyCostDkk"],
       properties: {
-        type: { enum: ["GOLD","SILVER","BRONZE"] }, // same in sql
-        monthlyCostDkk: { bsonType: "decimal" },
+        type: {
+          enum: ["GOLD","SILVER","BRONZE"] // same as SQL membership enum
+        },
+        monthlyCostDkk: { bsonType: "decimal" }
       }
     }
   }
 });
 
-db.membershipTypes.createIndex({ code: 1 }, { unique: true });
+db.membershipTypes.createIndex({ type: 1 }, { unique: true });
 
 // -----------------------------------------------------------------------------
-/* feeTypes (lookup) */
+// feeTypes (lookup)
 // -----------------------------------------------------------------------------
 db.createCollection("feeTypes", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["code","isActive"],
+      required: ["type","defaultAmountDkk"],
       properties: {
-        type: { enum: ["LATE","DAMAGED","OTHER"] }, // same in sql
-        defaultAmountDkk: { bsonType: ["decimal","null"] },
+        type: {
+          enum: ["LATE","DAMAGED","OTHER"] // same as SQL fee_type enum
+        },
+        defaultAmountDkk: { bsonType: ["decimal","null"] }
       }
     }
   }
 });
 
-db.feeTypes.createIndex({ code: 1 }, { unique: true });
+db.feeTypes.createIndex({ type: 1 }, { unique: true });
 
 // -----------------------------------------------------------------------------
-/* genres (lookup) */
+// genres (lookup)
 // -----------------------------------------------------------------------------
-dk.createCollection("genres", {
+db.createCollection("genres", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
@@ -135,7 +146,7 @@ dk.createCollection("genres", {
 db.genres.createIndex({ name: 1 }, { unique: true });
 
 // -----------------------------------------------------------------------------
-/* formats (lookup) */
+// formats (lookup) – SQL formats only; Mongo inventory also supports DIGITAL
 // -----------------------------------------------------------------------------
 db.createCollection("formats", {
   validator: {
@@ -160,23 +171,30 @@ db.createCollection("movies", {
       bsonType: "object",
       required: ["title"],
       properties: {
-        title: { bsonType: "string" },
-        releaseYear: { bsonType: ["int","null"] },
+        title:      { bsonType: "string" },
+        releaseYear:{ bsonType: ["int","null"] },
         runtimeMin: { bsonType: ["int","null"] },
-        rating: { bsonType: ["int","null"], minimum: 1, maximum: 10 },
-        summary: { bsonType: ["string","null"] },
-        genres: { bsonType: "array", items: { bsonType: "string" } },
+        // SQL rating is DECIMAL(3,1); here we keep an int 1–10 (design choice)
+        rating:     { bsonType: ["int","null"], minimum: 1, maximum: 10 },
+        summary:    { bsonType: ["string","null"] },
+
+        // genre names as strings, backed by genres collection
+        genres: {
+          bsonType: "array",
+          items: { bsonType: "string" }
+        },
+
         reviews: {
           bsonType: "array",
           items: {
             bsonType: "object",
-            required: ["rating", "createdAt"],
+            required: ["rating","createdAt"],
             properties: {
-              _id: { bsonType: "objectId" },
+              _id:        { bsonType: "objectId" },
               customerId: { bsonType: ["objectId","null"] },
-              rating: { bsonType: "int", minimum: 1, maximum: 10 },
-              body: { bsonType: ["string","null"] },
-              createdAt: { bsonType: "date" }
+              rating:     { bsonType: "int", minimum: 1, maximum: 10 },
+              body:       { bsonType: ["string","null"] },
+              createdAt:  { bsonType: "date" }
             }
           }
         }
@@ -198,32 +216,34 @@ db.createCollection("locations", {
       required: ["address","city"],
       properties: {
         address: { bsonType: "string" },
-        city: { bsonType: "string" },
+        city:    { bsonType: "string" },
+
         employees: {
           bsonType: "array",
           items: {
             bsonType: "object",
             required: ["_id","firstName","lastName","email","isActive"],
             properties: {
-              _id: { bsonType: "objectId" },
-              firstName: { bsonType: "string" },
-              lastName: { bsonType: "string" },
+              _id:         { bsonType: "objectId" },
+              firstName:   { bsonType: "string" },
+              lastName:    { bsonType: "string" },
               phoneNumber: { bsonType: ["string","null"] },
-              email: { bsonType: "string" },
-              isActive: { bsonType: "bool" }
+              email:       { bsonType: "string" },
+              isActive:    { bsonType: "bool" }
             }
           }
         },
+
         inventory: {
           bsonType: "array",
           items: {
             bsonType: "object",
             required: ["_id","movieId","format","status"],
             properties: {
-              _id: { bsonType: "objectId" },
-              movieId: { bsonType: "objectId" },
-              format: { enum: ["DVD","BLU-RAY","VHS","DIGITAL"] },
-              status: { enum: [1,2,3,4] }
+              _id:     { bsonType: "objectId" },
+              movieId: { bsonType: "objectId" }, // ref movies._id
+              format:  { enum: ["DVD","BLU-RAY","VHS"] },
+              status:  { enum: ["AVAILABLE","RENTED","DAMAGED","RETIRED"] }
             }
           }
         }
@@ -242,26 +262,39 @@ db.createCollection("rentals", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["customerId","locationId","status","items","rentedAtDatetime"], // <- added locationId
+      required: ["customerId","locationId","status","items"],
       properties: {
-        customerId:   { bsonType: "objectId" },
-        locationId:   { bsonType: "objectId" },   // ref locations._id
-        employeeId:   { bsonType: ["objectId","null"] },
-        status:       { enum: ["RESERVED","OPEN","RETURNED","LATE","CANCELLED"] },
+        customerId: { bsonType: "objectId" }, // ref customers._id
+        locationId: { bsonType: "objectId" }, // ref locations._id
+        employeeId: { bsonType: ["objectId","null"] }, // ref locations.employees._id
+
+        status: {
+          enum: ["RESERVED","OPEN","RETURNED","LATE", "CANCELLED"]
+        },
+
+        // reserved rentals may omit rentedAtDatetime entirely
         rentedAtDatetime:   { bsonType: "date" },
         returnedAtDatetime: { bsonType: ["date","null"] },
         dueAtDatetime:      { bsonType: ["date","null"] },
         reservedAtDatetime: { bsonType: ["date","null"] },
 
+        // Items: snapshot of which copy, which movie, and which format
         items: {
           bsonType: "array",
           minItems: 1,
           items: {
             bsonType: "object",
-            required: ["inventoryItemId","movieId"],
+            required: ["inventoryItemId","movieId","format"],
             properties: {
-              inventoryItemId: { bsonType: "objectId" }, // points into locations.inventory._id
-              movieId:         { bsonType: "objectId" }
+              inventoryItemId: {
+                bsonType: "objectId" // locations.inventory._id
+              },
+              movieId: {
+                bsonType: "objectId" // movies._id
+              },
+              format: {
+                enum: ["DVD","BLU-RAY","VHS","DIGITAL"] // snapshot at rental time
+              }
             }
           }
         },
@@ -272,9 +305,10 @@ db.createCollection("rentals", {
             bsonType: "object",
             required: ["_id","amountDkk","createdAt"],
             properties: {
-              _id:        { bsonType: "objectId" },
-              amountDkk:  { bsonType: "decimal" },
-              createdAt:  { bsonType: "date" }
+              _id:       { bsonType: "objectId" },
+              amountDkk: { bsonType: "decimal" },
+              createdAt: { bsonType: "date" },
+              // extra fields (method, etc.) are allowed but not validated here
             }
           }
         },
@@ -285,13 +319,14 @@ db.createCollection("rentals", {
             bsonType: "object",
             required: ["_id","feeType","amountDkk"],
             properties: {
-              _id:        { bsonType: "objectId" },
-              feeType:    { bsonType: "string" },  // ref feeTypes.code
-              amountDkk:  { bsonType: "decimal" },
+              _id:       { bsonType: "objectId" },
+              feeType:   { bsonType: "string" },  // ref feeTypes.type ("LATE", ...)
+              amountDkk: { bsonType: "decimal" },
               snapshot: {
                 bsonType: ["object","null"],
                 properties: {
-                  defaultAmountDkk:  { bsonType: ["decimal","null"] }
+                  // default amount at the time fee was applied
+                  defaultAmountDkk: { bsonType: ["decimal","null"] }
                 }
               }
             }
@@ -313,8 +348,9 @@ db.createCollection("rentals", {
   }
 });
 
-// indexes (add a store-scoped one)
+// indexes (including store-scoped recent rentals)
 db.rentals.createIndex({ customerId: 1, status: 1, rentedAtDatetime: -1 });
 db.rentals.createIndex({ status: 1 });
 db.rentals.createIndex({ "items.inventoryItemId": 1 });
 db.rentals.createIndex({ locationId: 1, status: 1, rentedAtDatetime: -1 });
+// -----------------------------------------------------------------------------
