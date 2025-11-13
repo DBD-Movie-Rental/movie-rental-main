@@ -33,6 +33,9 @@ The goal is to showcase practical, side-by-side implementations using ORM/ODM/OG
 - Git  
 - Python 3.10+ (for the API layer)
 
+> Python/virtualenv are only needed if you want to run the API directly on your host.  
+> For the Docker setup below, everything runs in containers.
+
 ### Setup
 
 ```bash
@@ -49,6 +52,8 @@ pip install -r requirements.txt
 docker compose -f compose/docker-compose.dev.yml down -v
 docker compose -f compose/docker-compose.dev.yml up -d
 
+# Build and start services (API + MySQL)
+docker compose -f compose/docker-compose.dev.yml up --build -d
 
 # Optional check running containers
 docker ps

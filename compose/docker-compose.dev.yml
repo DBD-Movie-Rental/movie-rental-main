@@ -1,8 +1,9 @@
 version: "3.9"
+
 services:
   mysql:
     image: mysql:8
-    container_name: mysql_movie_rental
+    container_name: mysql_database
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: movie_rental
@@ -13,5 +14,25 @@ services:
     volumes:
       - ../database/mysql/sql:/docker-entrypoint-initdb.d:ro
       - mysql_data:/var/lib/mysql
+
+  api:
+    build: ..
+    container_name: movie_rental_api
+    working_dir: /app
+    command: python -m src.app
+    environment:
+      FLASK_ENV: development
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: app
+      DB_PASSWORD: app
+      DB_NAME: movie_rental
+    volumes:
+      - ..:/app
+    ports:
+      - "5004:5004"
+    depends_on:
+      - mysql
+
 volumes:
   mysql_data:
