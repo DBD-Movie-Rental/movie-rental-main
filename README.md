@@ -43,6 +43,7 @@ cd movie-rental-main
 # 2. Create and activate virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
+pip install -r requirements.txt
 
 # 3. Start containers
 docker compose -f compose/docker-compose.dev.yml down -v
