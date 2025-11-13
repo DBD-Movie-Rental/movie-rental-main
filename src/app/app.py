@@ -7,6 +7,10 @@ def create_app():
     app.register_blueprint(mysql_health_bp, url_prefix="/api/v1/mysql")
     app.register_blueprint(mysql_routes_bp, url_prefix="/api/v1/mysql")
 
+    # TODO: add mongodb blueprint to flask app
+    #from api_routes.mongodb import bp as mongodb_bp
+    #app.register_blueprint(mongodb_bp)
+
     @app.get("/api/v1/health")
     def health():
         return jsonify({"status": "ok"})
