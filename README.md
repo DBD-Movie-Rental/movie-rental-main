@@ -17,49 +17,16 @@ A fully functional MySQL database for a movie rental system. The project include
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/DBD-Movie-Rental/movie-rental-mysql.git
-cd movie-rental-mysql
+git clone https://github.com/DBD-Movie-Rental/movie-rental-main.git
+cd movie-rental-main
 
-# 2. Start the database (this will automatically import all data)
-docker compose up -d
+docker compose -f compose/docker-compose.dev.yml down -v
+docker compose -f compose/docker-compose.dev.yml up -d
 
-# 3. Wait for initialization (about 30 seconds) then verify
-docker compose exec mysql mysql -u root -proot movie_rental -e "SHOW TABLES;"
-```
-
-### Connection Details
-- **Host:** `localhost` (or `127.0.0.1`)
-- **Port:** `3307`
-- **Username:** `root`
-- **Password:** `root`
-- **Database:** `movie_rental`
+python3 -m src.app.app
 
 ### Connecting to the Database
 
-```bash
-# Connect via Docker (recommended)
-docker compose exec mysql mysql -u root -proot movie_rental
-
-# Connect from host system (if MySQL client is installed)
-mysql -h 127.0.0.1 -P 3307 -u root -proot movie_rental
-```
-
-### Managing the Database
-
-```bash
-# Stop the database
-docker compose down
-
-# Start the database
-docker compose up -d
-
-# View logs
-docker compose logs mysql
-
-# Reset database (removes all data)
-docker compose down -v
-docker compose up -d
-```
 
 ---
 
