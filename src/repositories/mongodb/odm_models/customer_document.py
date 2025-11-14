@@ -11,39 +11,27 @@ from mongoengine import (
 
 
 class Address(EmbeddedDocument):
-    # MySQL address.address_id
     address_id = IntField(required=True, db_field="addressId")
-
     address = StringField(required=True, db_field="address")
     city = StringField(required=True, db_field="city")
     post_code = StringField(required=True, db_field="postCode")
 
 
 class MembershipPlan(EmbeddedDocument):
-    # MySQL membership_plan.membership_plan_id
     membership_plan_id = IntField(required=True, db_field="membershipPlanId")
-
-    # MySQL membership.membership (enum)
     membership_type = StringField(
         required=True,
         choices=("GOLD", "SILVER", "BRONZE"),
         db_field="membershipType",
     )
-
     starts_on = DateTimeField(required=True, db_field="startsOn")
     ends_on = DateTimeField(db_field="endsOn")
-
-    # MySQL membership_plan.monthly_cost
     monthly_cost_dkk = DecimalField(required=True, db_field="monthlyCostDkk")
-
-    # MySQL membership.membership_id
     membership_id = IntField(required=True, db_field="membershipId")
 
 
 class RecentRental(EmbeddedDocument):
-    # MySQL rental.rental_id
     rental_id = IntField(required=True, db_field="rentalId")
-
     status = StringField(
         required=True,
         choices=("RESERVED", "OPEN", "RETURNED", "LATE", "CANCELLED"),
@@ -54,7 +42,7 @@ class RecentRental(EmbeddedDocument):
 
 class Customer(Document):
     meta = {
-        "collection": "customers",  # explicit collection name
+        "collection": "customers",
         "indexes": [
             {"fields": ["customer_id"], "unique": True},  # customerId in Mongo
             "email",
@@ -63,8 +51,6 @@ class Customer(Document):
 
     # Shared logical ID with MySQL customer.customer_id
     customer_id = IntField(required=True, unique=True, db_field="customerId")
-
-    # Flat fields
     first_name = StringField(required=True, db_field="firstName")
     last_name = StringField(required=True, db_field="lastName")
     email = StringField(required=True, db_field="email")
