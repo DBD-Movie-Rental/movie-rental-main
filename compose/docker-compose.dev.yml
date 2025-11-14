@@ -51,9 +51,11 @@ services:
     volumes:
       - ..:/app
     ports:
-      - "5004:5004"
+      - "5004:5004" # API port
     depends_on:
       - mysql
+      - mongodb
 
 volumes:
   mysql_data:
+  mongodb_data:
