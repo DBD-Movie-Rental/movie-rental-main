@@ -1,11 +1,11 @@
 # 🎬 Movie Rental Database
 
-![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue?logo=mysql&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-latest-green?logo=mongodb&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.x-blue?logo=mysql&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-7.x-green?logo=mongodb&logoColor=white)
 ![Neo4j](https://img.shields.io/badge/Neo4j-latest-blue?logo=neo4j&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.1.2-black?logo=flask&logoColor=white)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.44-red?logo=python&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-20.10+-blue?logo=docker&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-20.10%2B-blue?logo=docker&logoColor=white)
 
 A movie rental system based on a traditional physical rental store.  
 The project models customers, rentals, inventory, staff, payments, and overdue handling.
@@ -72,8 +72,11 @@ Run both the API and MySQL inside Docker.
 git clone https://github.com/DBD-Movie-Rental/movie-rental-main.git
 cd movie-rental-main
 
-# 2. Build and start all services (API + MySQL)
+# 2. Built docker compose and run
 docker compose -f compose/docker-compose.dev.yml up --build -d
+
+# 3. Run mysql --> mongodb migration
+docker compose -f compose/docker-compose.dev.yml exec api python -m migrations.migrate_sql_to_mongo
 
 # 3. (Optional) Check running containers
 docker ps
