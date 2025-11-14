@@ -12,5 +12,5 @@ def init_mongo() -> None:
     connect(
         db=db_name,
         host=mongo_uri,
-        alias="default",  # important: default connection for MongoEngine
+        alias="default",
     )
