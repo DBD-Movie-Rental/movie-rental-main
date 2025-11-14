@@ -6,7 +6,7 @@ from mongoengine import (
     IntField,
     StringField,
     DateTimeField,
-    DecimalField,
+    Decimal128Field as DecimalField,
 )
 
 
@@ -43,10 +43,7 @@ class RecentRental(EmbeddedDocument):
 class Customer(Document):
     meta = {
         "collection": "customers",
-        "indexes": [
-            {"fields": ["customer_id"], "unique": True},  # customerId in Mongo
-            "email",
-        ],
+        "auto_create_index": False, 
     }
 
     # Shared logical ID with MySQL customer.customer_id

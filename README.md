@@ -72,8 +72,11 @@ Run both the API and MySQL inside Docker.
 git clone https://github.com/DBD-Movie-Rental/movie-rental-main.git
 cd movie-rental-main
 
-# 2. Build and start all services (API + MySQL)
+# 2. Built docker compose and run
 docker compose -f compose/docker-compose.dev.yml up --build -d
+
+# 3. Run mysql --> mongodb migration
+docker compose -f compose/docker-compose.dev.yml exec api python -m migrations.migrate_sql_to_mongo
 
 # 3. (Optional) Check running containers
 docker ps
