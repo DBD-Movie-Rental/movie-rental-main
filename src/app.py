@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from src.repositories.mongodb.connection import init_mongo
 from .api.v1.mysql.health import bp as mysql_health_bp
 from .api.v1.mysql.routes import bp as mysql_routes_bp
 
@@ -6,6 +7,9 @@ def create_app():
     app = Flask(__name__)
     app.register_blueprint(mysql_health_bp, url_prefix="/api/v1/mysql")
     app.register_blueprint(mysql_routes_bp, url_prefix="/api/v1/mysql")
+
+    # Initialize MongoDB connection
+    init_mongo()
 
     # TODO: add mongodb blueprint to flask app
     #from api_routes.mongodb import bp as mongodb_bp
