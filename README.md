@@ -7,16 +7,16 @@
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.44-red?logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-20.10%2B-blue?logo=docker&logoColor=white)
 
-A movie rental system based on a traditional physical rental store.  
+A movie rental system based on a vintage physical rental store.  
 The project models customers, rentals, inventory, staff, payments, and overdue handling.
 
 It is designed to demonstrate how the same domain can be implemented across three databases:
 
 - **MySQL** for the structured, transactional rental workflow  
 - **MongoDB** for flexible, document-oriented data  
-- **Neo4j** for graph-based relationships such as actors, genres, and connections
+- **Neo4j** for graph-based relationships such as customers, genres, and connections
 
-Each database has its own API namespace:
+Each database has its own API:
 
 - `/api/v1/mysql/*`
 - `/api/v1/mongodb/*`
@@ -52,10 +52,20 @@ source .venv/bin/activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Start only the MySQL container
-docker compose -f compose/docker-compose.dev.yml up -d mysql
+# 4. Start MySQL + MongoDB containers
+docker compose -f compose/docker-compose.dev.yml up -d mysql mongodb
 
-# 5. Run the Flask API locally
+# 5. Configure DB environment for local Flask (Mac/Linux)
+export DB_HOST=127.0.0.1
+export DB_PORT=3307
+export DB_USER=app
+export DB_PASSWORD=app
+export DB_NAME=movie_rental
+
+export MONGO_URI="mongodb://root:root@127.0.0.1:27017"
+export MONGO_DB_NAME=movieRental
+
+# 6. Run the Flask API locally
 python -m src.app
 ```
 
