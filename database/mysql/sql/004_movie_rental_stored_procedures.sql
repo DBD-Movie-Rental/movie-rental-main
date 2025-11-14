@@ -4,22 +4,28 @@ USE movie_rental;
 -- Add customer with address
 -- --------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE add_customer_with_address (
-    IN p_first_name VARCHAR(255),
-    IN p_last_name VARCHAR(255),
-    IN p_email VARCHAR(255),
-    IN p_phone VARCHAR(15),
-    IN p_address VARCHAR(255),
-    IN p_city VARCHAR(255),
-    IN p_post_code CHAR(4)
+    IN p_first_name   VARCHAR(255),
+    IN p_last_name    VARCHAR(255),
+    IN p_email        VARCHAR(255),
+    IN p_phone        VARCHAR(15),
+    IN p_address      VARCHAR(255),
+    IN p_city         VARCHAR(255),
+    IN p_post_code    CHAR(4)
 )
 BEGIN
     DECLARE v_customer_id INT;
 
-    -- Start transaction
+    -- Roll back the whole transaction if ANY SQL error occurs
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;  -- re-throw the original error to the caller
+    END;
+
     START TRANSACTION;
 
-    -- Insert new customer
     INSERT INTO customer (
         first_name,
         last_name,
@@ -28,13 +34,12 @@ BEGIN
     ) VALUES (
         p_first_name,
         p_last_name,
-        LOWER(p_email),   -- normalized email
+        LOWER(p_email),
         p_phone
     );
 
-    SET v_customer_id = LAST_INSERT_ID(); -- save customer ID for address
+    SET v_customer_id = LAST_INSERT_ID();
 
-    -- Insert an address linked to this customer
     INSERT INTO address (
         address,
         city,
@@ -47,24 +52,25 @@ BEGIN
         v_customer_id
     );
 
-    -- Commit transaction
     COMMIT;
 
-    -- Return the new customer ID
     SELECT v_customer_id AS new_customer_id;
 END$$
+
+DELIMITER ;
 
 
 -- --------------------------------
 -- Verify inventory items available
 -- --------------------------------
 DELIMITER $$
+
 CREATE PROCEDURE verify_inventory_items_available (
-    IN p_inventory_items JSON,
-    OUT p_all_available BOOLEAN
+    IN  p_inventory_items JSON,
+    OUT p_all_available   BOOLEAN
 )
 BEGIN
-    DECLARE v_total INT;
+    DECLARE v_total     INT;
     DECLARE v_available INT;
 
     SET v_total = JSON_LENGTH(p_inventory_items);
@@ -77,24 +83,35 @@ BEGIN
     SET p_all_available = (v_available = v_total);
 END$$
 
+DELIMITER ;
+
 
 -- --------------------------------
 -- 
 -- --------------------------------
 
 DELIMITER $$
+
 CREATE PROCEDURE create_rental (
-    IN p_customer_id INT,
-    IN p_employee_id INT,
-    IN p_promo_code_id INT,
+    IN p_customer_id     INT,
+    IN p_employee_id     INT,
+    IN p_promo_code_id   INT,
     IN p_inventory_items JSON
 )
 BEGIN
-    DECLARE v_rental_id INT;
-    DECLARE v_now DATETIME;
-    DECLARE v_due DATETIME;
+    DECLARE v_rental_id     INT;
+    DECLARE v_now           DATETIME;
+    DECLARE v_due           DATETIME;
     DECLARE v_all_available BOOLEAN;
 
+    -- Any SQL error (including SIGNAL) will rollback the transaction
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    -- 1) Availability check
     CALL verify_inventory_items_available(p_inventory_items, v_all_available);
 
     IF v_all_available = FALSE THEN
@@ -102,10 +119,11 @@ BEGIN
             SET MESSAGE_TEXT = 'One or more inventory items are not available for rental.';
     END IF;
 
+    -- 2) Transaction for writes
     START TRANSACTION;
 
     SET v_now = NOW();
-    SET v_due = DATE_ADD(v_now, INTERVAL 7 DAY); -- Standard 7 Days
+    SET v_due = DATE_ADD(v_now, INTERVAL 7 DAY); -- standard 7 days
 
     INSERT INTO rental (
         rented_at_datetime,
@@ -141,3 +159,5 @@ BEGIN
 
     SELECT v_rental_id AS new_rental_id;
 END$$
+
+DELIMITER ;
