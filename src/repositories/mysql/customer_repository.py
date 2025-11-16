@@ -1,19 +1,42 @@
 from sqlalchemy import text
-from .orm_models.customer_orm import SessionLocal, Customer
+from .base_repository import BaseRepository
+from .orm_models.customer_orm import Customer
 
-class CustomerRepository:
-    def get_all_customers(self):
-        with SessionLocal() as session:
-            return session.query(Customer).all()
+
+class CustomerRepository(BaseRepository[Customer]):
+    def __init__(self):
+        super().__init__(Customer)
+
+    # Make BaseRepository's generic blueprint use the stored procedure for create
+    def create(self, data):  
+        required_fields = [
+            "first_name", 
+            "last_name", 
+            "email", 
+            "phone_number",
+            "address", 
+            "city", 
+            "post_code",
+        ]
+        missing = [f for f in required_fields if f not in data or data[f] in (None, "")]
+        if missing:
+            raise ValueError(f"Missing fields: {', '.join(missing)}")
+
+        new_id = self.create_customer_via_proc(data)
+        if not new_id:
+            raise RuntimeError("Customer created, but ID could not be retrieved")
+        created = self.get_by_id(new_id)
+        return created or {"id": new_id}
 
     def create_customer_via_proc(self, data):
         """
         Calls the MySQL stored procedure add_customer_with_address().
         Returns the new customer's ID.
         """
-        with SessionLocal() as session:
+        with self._SessionLocal() as session:
             result = session.execute(
-                text("""
+                text(
+                    """
                     CALL add_customer_with_address(
                         :first_name,
                         :last_name,
@@ -23,7 +46,8 @@ class CustomerRepository:
                         :city,
                         :post_code
                     )
-                """),
+                    """
+                ),
                 {
                     "first_name": data["first_name"],
                     "last_name": data["last_name"],
@@ -44,10 +68,4 @@ class CustomerRepository:
 
     def delete_customer(self, customer_id: int) -> bool:
         """Delete a customer by id. Returns True if a row was deleted."""
-        with SessionLocal() as session:
-            customer = session.get(Customer, customer_id)
-            if not customer:
-                return False
-            session.delete(customer)
-            session.commit()
-            return True
+        return self.delete(customer_id)
