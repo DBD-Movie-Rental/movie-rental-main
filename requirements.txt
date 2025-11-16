@@ -11,3 +11,4 @@ pymysql==1.1.2
 mongoengine==0.29.1
 pymongo==4.15.4
 cryptography==43.0.1
+flask-swagger-ui==4.11.1

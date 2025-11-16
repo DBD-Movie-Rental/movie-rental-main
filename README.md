@@ -26,6 +26,15 @@ The goal is to showcase practical, side-by-side implementations using ORM/ODM/OG
 
 ---
 
+## API Documentation (Swagger / OpenAPI)
+
+Interactive API docs are available after starting the Flask app:
+
+- Swagger UI: `http://localhost:5004/api/docs`
+- Raw OpenAPI YAML: `http://localhost:5004/openapi/v1.yaml`
+
+---
+
 ## Quick Start (Docker - Recommended)
 
 ### Prerequisites
@@ -72,6 +81,9 @@ python -m src.app
 API will be available at: `http://localhost:5004`  
 MySQL will be available at: `localhost:3307` (user: `app`, password: `app`, db: `movie_rental`)
 
+Swagger UI: `http://localhost:5004/api/docs`  
+OpenAPI Spec: `http://localhost:5004/openapi/v1.yaml`
+
 
 ## Setup (Docker – API + MySQL)
 
@@ -94,6 +106,8 @@ docker ps
 
 API: `http://localhost:5004/api/v1/health`  
 MySQL: `localhost:3307`
+
+Swagger UI: `http://localhost:5004/api/docs`
 
 
 ## Docker build only

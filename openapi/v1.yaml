@@ -2,33 +2,503 @@ openapi: 3.0.3
 info:
   title: Movie Rental API
   version: "1.0.0"
+servers:
+  - url: http://localhost:5004
+    description: Local dev
 paths:
   /api/v1/mysql/health:
     get:
+      tags: [health]
       summary: MySQL health
       responses:
         "200":
           description: OK
+
+  # ───────────── Customers ─────────────
   /api/v1/mysql/customers:
     get:
+      tags: [customers]
       summary: List customers
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        "500": { $ref: '#/components/responses/ServerError' }
     post:
-      summary: Create customer
+      tags: [customers]
+      summary: Create customer (uses stored procedure)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreate'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "500": { $ref: '#/components/responses/ServerError' }
+
+  /api/v1/mysql/customers/{id}:
+    parameters:
+      - $ref: '#/components/parameters/IdParam'
+    get:
+      tags: [customers]
+      summary: Get customer by id
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        "404": { $ref: '#/components/responses/NotFound' }
+        "500": { $ref: '#/components/responses/ServerError' }
+    put:
+      tags: [customers]
+      summary: Update customer (partial allowed)
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                first_name: { type: string }
-                last_name:  { type: string }
-                email:      { type: string, format: email }
-                phone_number: { type: string }
-              required: [first_name, last_name, email, phone_number]
+              additionalProperties: true
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "404": { $ref: '#/components/responses/NotFound' }
+        "500": { $ref: '#/components/responses/ServerError' }
+    delete:
+      tags: [customers]
+      summary: Delete customer
+      responses:
+        "204": { description: No Content }
+        "404": { $ref: '#/components/responses/NotFound' }
+        "500": { $ref: '#/components/responses/ServerError' }
+
+  # ───────────── Genres ─────────────
+  /api/v1/mysql/genres:
+    get:
+      tags: [genres]
+      summary: List genres
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Genre' }
+        "500": { $ref: '#/components/responses/ServerError' }
+    post:
+      tags: [genres]
+      summary: Create genre
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/GenreCreate' }
       responses:
         "201":
           description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Genre' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "500": { $ref: '#/components/responses/ServerError' }
+
+  /api/v1/mysql/genres/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get:
+      tags: [genres]
+      summary: Get genre by id
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Genre' } } } }
+        "404": { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [genres]
+      summary: Update genre
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, properties: { name: { type: string } } } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Genre' } } } }
+        "404": { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [genres]
+      summary: Delete genre
+      responses:
+        "204": { description: No Content }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  # ───────────── Movies ─────────────
+  /api/v1/mysql/movies:
+    get:
+      tags: [movies]
+      summary: List movies
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Movie' } } } } }
+    post:
+      tags: [movies]
+      summary: Create movie
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/MovieCreate' } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Movie' } } } }
+
+  /api/v1/mysql/movies/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get:
+      tags: [movies]
+      summary: Get movie by id
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Movie' } } } }
+        "404": { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [movies]
+      summary: Update movie
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, additionalProperties: true } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Movie' } } } }
+        "404": { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [movies]
+      summary: Delete movie
+      responses:
+        "204": { description: No Content }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  # ───────────── Employees ─────────────
+  /api/v1/mysql/employees:
+    get:
+      tags: [employees]
+      summary: List employees
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Employee' } } } } }
+    post:
+      tags: [employees]
+      summary: Create employee
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/EmployeeCreate' } } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Employee' } } } }
+
+  /api/v1/mysql/employees/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get:
+      tags: [employees]
+      summary: Get employee by id
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Employee' } } } }
+        "404": { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [employees]
+      summary: Update employee
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, additionalProperties: true } } }
+      responses:
+        "200": { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Employee' } } } }
+        "404": { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [employees]
+      summary: Delete employee
+      responses:
+        "204": { description: No Content }
+        "404": { $ref: '#/components/responses/NotFound' }
+
+  # ───────────── Simple generic endpoints for remaining resources ─────────────
+  /api/v1/mysql/addresses:
+    get: { tags: [addresses], summary: List addresses, responses: { "200": { description: OK } } }
+    post: { tags: [addresses], summary: Create address, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Address' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/addresses/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [addresses], summary: Get address, responses: { "200": { description: OK } } }
+    put: { tags: [addresses], summary: Update address, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [addresses], summary: Delete address, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/fees:
+    get: { tags: [fees], summary: List fees, responses: { "200": { description: OK } } }
+    post: { tags: [fees], summary: Create fee, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Fee' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/fees/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [fees], summary: Get fee, responses: { "200": { description: OK } } }
+    put: { tags: [fees], summary: Update fee, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [fees], summary: Delete fee, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/formats:
+    get: { tags: [formats], summary: List formats, responses: { "200": { description: OK } } }
+    post: { tags: [formats], summary: Create format, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Format' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/formats/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [formats], summary: Get format, responses: { "200": { description: OK } } }
+    put: { tags: [formats], summary: Update format, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [formats], summary: Delete format, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/locations:
+    get: { tags: [locations], summary: List locations, responses: { "200": { description: OK } } }
+    post: { tags: [locations], summary: Create location, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Location' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/locations/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [locations], summary: Get location, responses: { "200": { description: OK } } }
+    put: { tags: [locations], summary: Update location, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [locations], summary: Delete location, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/inventory_items:
+    get: { tags: [inventory_items], summary: List inventory items, responses: { "200": { description: OK } } }
+    post: { tags: [inventory_items], summary: Create inventory item, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/InventoryItem' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/inventory_items/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [inventory_items], summary: Get inventory item, responses: { "200": { description: OK } } }
+    put: { tags: [inventory_items], summary: Update inventory item, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [inventory_items], summary: Delete inventory item, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/memberships:
+    get: { tags: [memberships], summary: List memberships, responses: { "200": { description: OK } } }
+    post: { tags: [memberships], summary: Create membership, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Membership' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/memberships/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [memberships], summary: Get membership, responses: { "200": { description: OK } } }
+    put: { tags: [memberships], summary: Update membership, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [memberships], summary: Delete membership, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/membership_plans:
+    get: { tags: [membership_plans], summary: List membership plans, responses: { "200": { description: OK } } }
+    post: { tags: [membership_plans], summary: Create membership plan, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/MembershipPlan' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/membership_plans/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [membership_plans], summary: Get membership plan, responses: { "200": { description: OK } } }
+    put: { tags: [membership_plans], summary: Update membership plan, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [membership_plans], summary: Delete membership plan, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/promo_codes:
+    get: { tags: [promo_codes], summary: List promo codes, responses: { "200": { description: OK } } }
+    post: { tags: [promo_codes], summary: Create promo code, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/PromoCode' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/promo_codes/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [promo_codes], summary: Get promo code, responses: { "200": { description: OK } } }
+    put: { tags: [promo_codes], summary: Update promo code, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [promo_codes], summary: Delete promo code, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/rentals:
+    get: { tags: [rentals], summary: List rentals, responses: { "200": { description: OK } } }
+    post: { tags: [rentals], summary: Create rental, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Rental' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/rentals/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [rentals], summary: Get rental, responses: { "200": { description: OK } } }
+    put: { tags: [rentals], summary: Update rental, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [rentals], summary: Delete rental, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/payments:
+    get: { tags: [payments], summary: List payments, responses: { "200": { description: OK } } }
+    post: { tags: [payments], summary: Create payment, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Payment' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/payments/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [payments], summary: Get payment, responses: { "200": { description: OK } } }
+    put: { tags: [payments], summary: Update payment, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [payments], summary: Delete payment, responses: { "204": { description: No Content } } }
+
+  /api/v1/mysql/reviews:
+    get: { tags: [reviews], summary: List reviews, responses: { "200": { description: OK } } }
+    post: { tags: [reviews], summary: Create review, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Review' } } } }, responses: { "201": { description: Created } } }
+  /api/v1/mysql/reviews/{id}:
+    parameters: [ { $ref: '#/components/parameters/IdParam' } ]
+    get: { tags: [reviews], summary: Get review, responses: { "200": { description: OK } } }
+    put: { tags: [reviews], summary: Update review, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [reviews], summary: Delete review, responses: { "204": { description: No Content } } }
+
+components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer }
+
+  responses:
+    BadRequest: { description: Bad Request }
+    NotFound: { description: Not Found }
+    ServerError: { description: Internal Server Error }
+
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id: { type: integer }
+        first_name: { type: string }
+        last_name: { type: string }
+        email: { type: string, format: email }
+        phone_number: { type: string }
+        created_at: { type: string, format: date-time }
+
+    CustomerCreate:
+      type: object
+      required: [first_name, last_name, email, phone_number, address, city, post_code]
+      properties:
+        first_name: { type: string }
+        last_name: { type: string }
+        email: { type: string, format: email }
+        phone_number: { type: string }
+        address: { type: string }
+        city: { type: string }
+        post_code: { type: string }
+
+    Genre:
+      type: object
+      properties: { id: { type: integer }, name: { type: string } }
+    GenreCreate:
+      type: object
+      required: [name]
+      properties: { name: { type: string } }
+
+    Movie:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        release_year: { type: integer }
+        runtime_min: { type: integer }
+        rating: { type: number, format: float }
+        summary: { type: string }
+    MovieCreate:
+      type: object
+      required: [title, release_year, runtime_min]
+      properties:
+        title: { type: string }
+        release_year: { type: integer }
+        runtime_min: { type: integer }
+        rating: { type: number, format: float }
+        summary: { type: string }
+
+    Employee:
+      type: object
+      properties:
+        id: { type: integer }
+        first_name: { type: string }
+        last_name: { type: string }
+        phone_number: { type: string }
+        email: { type: string, format: email }
+        is_active: { type: boolean }
+    EmployeeCreate:
+      type: object
+      required: [first_name, last_name, phone_number, email]
+      properties:
+        first_name: { type: string }
+        last_name: { type: string }
+        phone_number: { type: string }
+        email: { type: string, format: email }
+        is_active: { type: boolean }
+
+    Address:
+      type: object
+      properties:
+        id: { type: integer }
+        address: { type: string }
+        city: { type: string }
+        post_code: { type: string }
+        customer_id: { type: integer }
+
+    Fee:
+      type: object
+      properties:
+        id: { type: integer }
+        fee_type: { type: string, enum: [LATE, DAMAGED, OTHER] }
+        amount_dkk: { type: number, format: float }
+
+    Format:
+      type: object
+      properties:
+        id: { type: integer }
+        format: { type: string, enum: [DVD, BLU-RAY, VHS] }
+
+    Location:
+      type: object
+      properties:
+        id: { type: integer }
+        address: { type: string }
+        city: { type: string }
+
+    InventoryItem:
+      type: object
+      properties:
+        id: { type: integer }
+        location_id: { type: integer }
+        format_id: { type: integer }
+        movie_id: { type: integer }
+        status: { type: integer }
+
+    Membership:
+      type: object
+      properties:
+        id: { type: integer }
+        membership: { type: string, enum: [GOLD, SILVER, BRONZE] }
+
+    MembershipPlan:
+      type: object
+      properties:
+        id: { type: integer }
+        monthly_cost: { type: number, format: float }
+        starts_on: { type: string, format: date-time }
+        ends_on: { type: string, format: date-time }
+        membership_id: { type: integer }
+        customer_id: { type: integer }
+
+    PromoCode:
+      type: object
+      properties:
+        id: { type: integer }
+        code: { type: string }
+        description: { type: string }
+        percent_off: { type: number, format: float }
+        amount_off_dkk: { type: number, format: float }
+        starts_at: { type: string, format: date-time }
+        ends_at: { type: string, format: date-time }
+
+    Rental:
+      type: object
+      properties:
+        id: { type: integer }
+        rented_at_datetime: { type: string, format: date-time }
+        returned_at_datetime: { type: string, format: date-time }
+        due_at_datetime: { type: string, format: date-time }
+        reserved_at_datetime: { type: string, format: date-time }
+        status: { type: string, enum: [RESERVED, OPEN, RETURNED, LATE, CANCELLED] }
+        customer_id: { type: integer }
+        promo_code_id: { type: integer, nullable: true }
+        employee_id: { type: integer, nullable: true }
+
+    Payment:
+      type: object
+      properties:
+        id: { type: integer }
+        amount_dkk: { type: number, format: float }
+        created_at: { type: string, format: date-time }
+        rental_id: { type: integer }
+
+    Review:
+      type: object
+      properties:
+        id: { type: integer }
+        rating: { type: integer, minimum: 1, maximum: 10 }
+        body: { type: string }
+        created_at: { type: string, format: date-time }
+        movie_id: { type: integer }
