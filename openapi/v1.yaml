@@ -5,19 +5,38 @@ info:
 servers:
   - url: http://localhost:5004
     description: Local dev
+tags:
+  - name: MySQL
+    description: All MySQL CRUD endpoints
+  - name: MongoDB
+    description: MongoDB endpoints (health + future docs)
+  - name: Neo4j
+    description: Neo4j endpoints (health + future docs)
 paths:
   /api/v1/mysql/health:
     get:
-      tags: [health]
+      tags: [MySQL]
       summary: MySQL health
       responses:
         "200":
           description: OK
+  /api/v1/mongodb/health:
+    get:
+      tags: [MongoDB]
+      summary: MongoDB health
+      responses:
+        "200": { description: OK }
+  /api/v1/neo4j/health:
+    get:
+      tags: [Neo4j]
+      summary: Neo4j health
+      responses:
+        "200": { description: OK }
 
-  # ───────────── Customers ─────────────
+  # ───────────── MySQL Resources (collapsed under single tag) ─────────────
   /api/v1/mysql/customers:
     get:
-      tags: [customers]
+      tags: [MySQL]
       summary: List customers
       responses:
         "200":
@@ -30,7 +49,7 @@ paths:
                   $ref: '#/components/schemas/Customer'
         "500": { $ref: '#/components/responses/ServerError' }
     post:
-      tags: [customers]
+      tags: [MySQL]
       summary: Create customer (uses stored procedure)
       requestBody:
         required: true
@@ -52,7 +71,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/IdParam'
     get:
-      tags: [customers]
+      tags: [MySQL]
       summary: Get customer by id
       responses:
         "200":
@@ -64,7 +83,7 @@ paths:
         "404": { $ref: '#/components/responses/NotFound' }
         "500": { $ref: '#/components/responses/ServerError' }
     put:
-      tags: [customers]
+      tags: [MySQL]
       summary: Update customer (partial allowed)
       requestBody:
         required: true
@@ -84,17 +103,16 @@ paths:
         "404": { $ref: '#/components/responses/NotFound' }
         "500": { $ref: '#/components/responses/ServerError' }
     delete:
-      tags: [customers]
+      tags: [MySQL]
       summary: Delete customer
       responses:
         "204": { description: No Content }
         "404": { $ref: '#/components/responses/NotFound' }
         "500": { $ref: '#/components/responses/ServerError' }
 
-  # ───────────── Genres ─────────────
   /api/v1/mysql/genres:
     get:
-      tags: [genres]
+      tags: [MySQL]
       summary: List genres
       responses:
         "200":
@@ -106,7 +124,7 @@ paths:
                 items: { $ref: '#/components/schemas/Genre' }
         "500": { $ref: '#/components/responses/ServerError' }
     post:
-      tags: [genres]
+      tags: [MySQL]
       summary: Create genre
       requestBody:
         required: true
@@ -125,13 +143,13 @@ paths:
   /api/v1/mysql/genres/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
     get:
-      tags: [genres]
+      tags: [MySQL]
       summary: Get genre by id
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Genre' } } } }
         "404": { $ref: '#/components/responses/NotFound' }
     put:
-      tags: [genres]
+      tags: [MySQL]
       summary: Update genre
       requestBody:
         required: true
@@ -140,21 +158,20 @@ paths:
         "200": { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Genre' } } } }
         "404": { $ref: '#/components/responses/NotFound' }
     delete:
-      tags: [genres]
+      tags: [MySQL]
       summary: Delete genre
       responses:
         "204": { description: No Content }
         "404": { $ref: '#/components/responses/NotFound' }
 
-  # ───────────── Movies ─────────────
   /api/v1/mysql/movies:
     get:
-      tags: [movies]
+      tags: [MySQL]
       summary: List movies
       responses:
         "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Movie' } } } } }
     post:
-      tags: [movies]
+      tags: [MySQL]
       summary: Create movie
       requestBody:
         required: true
@@ -165,13 +182,13 @@ paths:
   /api/v1/mysql/movies/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
     get:
-      tags: [movies]
+      tags: [MySQL]
       summary: Get movie by id
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Movie' } } } }
         "404": { $ref: '#/components/responses/NotFound' }
     put:
-      tags: [movies]
+      tags: [MySQL]
       summary: Update movie
       requestBody:
         required: true
@@ -180,21 +197,20 @@ paths:
         "200": { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Movie' } } } }
         "404": { $ref: '#/components/responses/NotFound' }
     delete:
-      tags: [movies]
+      tags: [MySQL]
       summary: Delete movie
       responses:
         "204": { description: No Content }
         "404": { $ref: '#/components/responses/NotFound' }
 
-  # ───────────── Employees ─────────────
   /api/v1/mysql/employees:
     get:
-      tags: [employees]
+      tags: [MySQL]
       summary: List employees
       responses:
         "200": { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Employee' } } } } }
     post:
-      tags: [employees]
+      tags: [MySQL]
       summary: Create employee
       requestBody:
         required: true
@@ -205,13 +221,13 @@ paths:
   /api/v1/mysql/employees/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
     get:
-      tags: [employees]
+      tags: [MySQL]
       summary: Get employee by id
       responses:
         "200": { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Employee' } } } }
         "404": { $ref: '#/components/responses/NotFound' }
     put:
-      tags: [employees]
+      tags: [MySQL]
       summary: Update employee
       requestBody:
         required: true
@@ -220,111 +236,110 @@ paths:
         "200": { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Employee' } } } }
         "404": { $ref: '#/components/responses/NotFound' }
     delete:
-      tags: [employees]
+      tags: [MySQL]
       summary: Delete employee
       responses:
         "204": { description: No Content }
         "404": { $ref: '#/components/responses/NotFound' }
 
-  # ───────────── Simple generic endpoints for remaining resources ─────────────
   /api/v1/mysql/addresses:
-    get: { tags: [addresses], summary: List addresses, responses: { "200": { description: OK } } }
-    post: { tags: [addresses], summary: Create address, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Address' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List addresses, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create address, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Address' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/addresses/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [addresses], summary: Get address, responses: { "200": { description: OK } } }
-    put: { tags: [addresses], summary: Update address, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [addresses], summary: Delete address, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get address, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update address, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete address, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/fees:
-    get: { tags: [fees], summary: List fees, responses: { "200": { description: OK } } }
-    post: { tags: [fees], summary: Create fee, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Fee' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List fees, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create fee, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Fee' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/fees/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [fees], summary: Get fee, responses: { "200": { description: OK } } }
-    put: { tags: [fees], summary: Update fee, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [fees], summary: Delete fee, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get fee, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update fee, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete fee, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/formats:
-    get: { tags: [formats], summary: List formats, responses: { "200": { description: OK } } }
-    post: { tags: [formats], summary: Create format, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Format' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List formats, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create format, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Format' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/formats/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [formats], summary: Get format, responses: { "200": { description: OK } } }
-    put: { tags: [formats], summary: Update format, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [formats], summary: Delete format, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get format, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update format, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete format, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/locations:
-    get: { tags: [locations], summary: List locations, responses: { "200": { description: OK } } }
-    post: { tags: [locations], summary: Create location, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Location' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List locations, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create location, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Location' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/locations/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [locations], summary: Get location, responses: { "200": { description: OK } } }
-    put: { tags: [locations], summary: Update location, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [locations], summary: Delete location, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get location, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update location, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete location, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/inventory_items:
-    get: { tags: [inventory_items], summary: List inventory items, responses: { "200": { description: OK } } }
-    post: { tags: [inventory_items], summary: Create inventory item, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/InventoryItem' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List inventory items, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create inventory item, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/InventoryItem' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/inventory_items/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [inventory_items], summary: Get inventory item, responses: { "200": { description: OK } } }
-    put: { tags: [inventory_items], summary: Update inventory item, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [inventory_items], summary: Delete inventory item, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get inventory item, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update inventory item, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete inventory item, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/memberships:
-    get: { tags: [memberships], summary: List memberships, responses: { "200": { description: OK } } }
-    post: { tags: [memberships], summary: Create membership, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Membership' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List memberships, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create membership, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Membership' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/memberships/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [memberships], summary: Get membership, responses: { "200": { description: OK } } }
-    put: { tags: [memberships], summary: Update membership, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [memberships], summary: Delete membership, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get membership, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update membership, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete membership, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/membership_plans:
-    get: { tags: [membership_plans], summary: List membership plans, responses: { "200": { description: OK } } }
-    post: { tags: [membership_plans], summary: Create membership plan, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/MembershipPlan' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List membership plans, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create membership plan, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/MembershipPlan' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/membership_plans/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [membership_plans], summary: Get membership plan, responses: { "200": { description: OK } } }
-    put: { tags: [membership_plans], summary: Update membership plan, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [membership_plans], summary: Delete membership plan, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get membership plan, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update membership plan, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete membership plan, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/promo_codes:
-    get: { tags: [promo_codes], summary: List promo codes, responses: { "200": { description: OK } } }
-    post: { tags: [promo_codes], summary: Create promo code, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/PromoCode' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List promo codes, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create promo code, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/PromoCode' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/promo_codes/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [promo_codes], summary: Get promo code, responses: { "200": { description: OK } } }
-    put: { tags: [promo_codes], summary: Update promo code, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [promo_codes], summary: Delete promo code, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get promo code, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update promo code, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete promo code, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/rentals:
-    get: { tags: [rentals], summary: List rentals, responses: { "200": { description: OK } } }
-    post: { tags: [rentals], summary: Create rental, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Rental' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List rentals, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create rental, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Rental' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/rentals/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [rentals], summary: Get rental, responses: { "200": { description: OK } } }
-    put: { tags: [rentals], summary: Update rental, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [rentals], summary: Delete rental, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get rental, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update rental, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete rental, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/payments:
-    get: { tags: [payments], summary: List payments, responses: { "200": { description: OK } } }
-    post: { tags: [payments], summary: Create payment, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Payment' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List payments, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create payment, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Payment' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/payments/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [payments], summary: Get payment, responses: { "200": { description: OK } } }
-    put: { tags: [payments], summary: Update payment, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [payments], summary: Delete payment, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get payment, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update payment, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete payment, responses: { "204": { description: No Content } } }
 
   /api/v1/mysql/reviews:
-    get: { tags: [reviews], summary: List reviews, responses: { "200": { description: OK } } }
-    post: { tags: [reviews], summary: Create review, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Review' } } } }, responses: { "201": { description: Created } } }
+    get: { tags: [MySQL], summary: List reviews, responses: { "200": { description: OK } } }
+    post: { tags: [MySQL], summary: Create review, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Review' } } } }, responses: { "201": { description: Created } } }
   /api/v1/mysql/reviews/{id}:
     parameters: [ { $ref: '#/components/parameters/IdParam' } ]
-    get: { tags: [reviews], summary: Get review, responses: { "200": { description: OK } } }
-    put: { tags: [reviews], summary: Update review, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
-    delete: { tags: [reviews], summary: Delete review, responses: { "204": { description: No Content } } }
+    get: { tags: [MySQL], summary: Get review, responses: { "200": { description: OK } } }
+    put: { tags: [MySQL], summary: Update review, requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }, responses: { "200": { description: Updated } } }
+    delete: { tags: [MySQL], summary: Delete review, responses: { "204": { description: No Content } } }
 
 components:
   parameters:
