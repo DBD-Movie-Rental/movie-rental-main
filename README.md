@@ -27,6 +27,15 @@ The goal is to showcase practical, side-by-side implementations using ORM/ODM/OG
 
 ---
 
+## Database Design – MySQL EER Diagram
+
+The core relational model for the project is captured in an Enhanced Entity–Relationship (EER) diagram.  
+It shows how customers, rentals, inventory, payments, memberships, and fees are connected in the MySQL schema.
+
+![MySQL EER Diagram](./docs/EER_Diagram.svg)
+
+---
+
 ## API Documentation (Swagger / OpenAPI)
 
 Interactive API docs are available after starting the Flask app:
@@ -48,7 +57,7 @@ Interactive API docs are available after starting the Flask app:
 
 ## Setup (local)
 
-Run the Flask API on your machine, and MySQL in Docker.
+Run the Flask API on your machine, MongoDB and MySQL in Docker.
 
 ```bash
 # 1. Clone the repository
@@ -65,25 +74,15 @@ pip install -r requirements.txt
 # 4. Start MySQL + MongoDB containers
 docker compose -f compose/docker-compose.dev.yml up -d mysql mongodb
 
-# 5. Configure DB environment for local Flask (Mac/Linux)
-export DB_HOST=127.0.0.1
-export DB_PORT=3307
-export DB_USER=app
-export DB_PASSWORD=app
-export DB_NAME=movie_rental
-
-export MONGO_URI="mongodb://root:root@127.0.0.1:27017"
-export MONGO_DB_NAME=movieRental
-
-# 6. Run the Flask API locally
+# 5. Run the Flask API locally
 python -m src.app
 ```
 
-API will be available at: `http://localhost:5004`  
-MySQL will be available at: `localhost:3307` (user: `app`, password: `app`, db: `movie_rental`)
+API will be available at: `http://127.0.0.1:5004`  
+MySQL will be available at: `127.0.0.1:3307` (user: `app`, password: `app`, db: `movie_rental`)
 
-Swagger UI: `http://localhost:5004/api/v1/docs`  
-OpenAPI Spec: `http://localhost:5004/openapi/v1.yaml`
+Swagger UI: `http://127.0.0.1:5004/api/v1/docs`  
+OpenAPI Spec: `http://127.0.0.1:5004/openapi/v1.yaml`
 
 
 ## Setup (Docker – API + MySQL + MongoDB)
