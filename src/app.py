@@ -24,7 +24,7 @@ def create_app():
         return jsonify({"status": "ok"})
 
     # Swagger/OpenAPI docs
-    SWAGGER_URL = "/api/docs"
+    SWAGGER_URL = "/api/v1/docs"
     API_URL = "/openapi/v1.yaml"
 
     swaggerui_bp = get_swaggerui_blueprint(
