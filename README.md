@@ -36,6 +36,16 @@ It shows how customers, rentals, inventory, payments, memberships, and fees are 
 
 ---
 
+
+## Database Design – MongoDB Document Model
+
+The MongoDB data model is captured in a document model diagram.  
+It shows how collections, embedded documents, and references represent the same domain in a document-oriented way.
+
+![MongoDB Document Model](./docs/document_model_diagram.png)
+
+---
+
 ## API Documentation (Swagger / OpenAPI)
 
 Interactive API docs are available after starting the Flask app:
