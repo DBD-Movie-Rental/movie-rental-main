@@ -81,7 +81,7 @@ python -m src.app
 API will be available at: `http://localhost:5004`  
 MySQL will be available at: `localhost:3307` (user: `app`, password: `app`, db: `movie_rental`)
 
-Swagger UI: `http://localhost:5004/api/docs`  
+Swagger UI: `http://localhost:5004/api/v1/docs`  
 OpenAPI Spec: `http://localhost:5004/openapi/v1.yaml`
 
 

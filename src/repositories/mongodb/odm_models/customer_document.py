@@ -77,36 +77,38 @@ class Customer(Document):
         }
     
     def to_detailed_dict(self) -> dict:
-        """
-        Returns all fields including embedded documents.
-        """
-        return {
-            "id": self.customer_id,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "email": self.email,
-            "phone_number": self.phone_number,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "address": {
-                "address_id": self.address.address_id,
-                "address": self.address.address,
-                "city": self.address.city,
-                "post_code": self.address.post_code,
-            } if self.address else None,
-            "membership_plan": {
-                "membership_plan_id": self.membership_plan.membership_plan_id,
-                "membership_type": self.membership_plan.membership_type,
-                "starts_on": self.membership_plan.starts_on.isoformat() if self.membership_plan.starts_on else None,
-                "ends_on": self.membership_plan.ends_on.isoformat() if self.membership_plan.ends_on else None,
-                "monthly_cost_dkk": str(self.membership_plan.monthly_cost_dkk) if self.membership_plan.monthly_cost_dkk else None,
-                "membership_id": self.membership_plan.membership_id,
-            } if self.membership_plan else None,
-            "recent_rentals": [
-                {
-                    "rental_id": rental.rental_id,
-                    "status": rental.status,
-                    "rented_at_datetime": rental.rented_at_datetime.isoformat() if rental.rented_at_datetime else None,
-                } for rental in self.recent_rentals
-            ] if self.recent_rentals else [],
-        }
+        """Optional richer DTO exposing embedded info."""
+        payload = self.to_dict()
+        payload["address"] = {
+            "address_id": self.address.address_id,
+            "address": self.address.address,
+            "city": self.address.city,
+            "post_code": self.address.post_code,
+        } if self.address else None
 
+        payload["membership_plan"] = {
+            "membership_plan_id": self.membership_plan.membership_plan_id,
+            "membership_type": self.membership_plan.membership_type,
+            "starts_on": self.membership_plan.starts_on.isoformat()
+            if self.membership_plan and self.membership_plan.starts_on
+            else None,
+            "ends_on": self.membership_plan.ends_on.isoformat()
+            if self.membership_plan and self.membership_plan.ends_on
+            else None,
+            "monthly_cost_dkk": str(self.membership_plan.monthly_cost_dkk)
+            if self.membership_plan and self.membership_plan.monthly_cost_dkk
+            else None,
+        } if self.membership_plan else None
+
+        payload["recent_rentals"] = [
+            {
+                "rental_id": r.rental_id,
+                "status": r.status,
+                "rented_at_datetime": r.rented_at_datetime.isoformat()
+                if r.rented_at_datetime
+                else None,
+            }
+            for r in (self.recent_rentals or [])
+        ]
+
+        return payload

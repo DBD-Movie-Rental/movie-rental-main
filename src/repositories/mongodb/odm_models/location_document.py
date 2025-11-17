@@ -46,28 +46,26 @@ class Location(Document):
         }
 
     def to_detailed_dict(self) -> dict:
-        return {
-            "id": self.location_id,
-            "address": self.address,
-            "city": self.city,
-            "employees": [
-                {
-                    "employee_id": emp.employee_id,
-                    "first_name": emp.first_name,
-                    "last_name": emp.last_name,
-                    "phone_number": emp.phone_number,
-                    "email": emp.email,
-                    "is_active": emp.is_active,
-                }
-                for emp in self.employees
-            ],
-            "inventory": [
-                {
-                    "inventory_item_id": item.inventory_item_id,
-                    "movie_id": item.movie_id,
-                    "format_id": item.format_id,
-                    "status": item.status,
-                }
-                for item in self.inventory
-            ],
-        }
+        payload = self.to_dict()
+        payload["employees"] = [
+            {
+                "employee_id": emp.employee_id,
+                "first_name": emp.first_name,
+                "last_name": emp.last_name,
+                "phone_number": emp.phone_number,
+                "email": emp.email,
+                "is_active": emp.is_active,
+            }
+            for emp in self.employees
+        ]
+
+        payload["inventory"] = [
+            {
+                "inventory_item_id": item.inventory_item_id,
+                "movie_id": item.movie_id,
+                "format_id": item.format_id,
+                "status": item.status,
+            }
+            for item in self.inventory
+        ]   
+        return payload

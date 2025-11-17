@@ -85,51 +85,60 @@ class Rental(Document):
         }
     
     def to_detailed_dict(self) -> dict:
-        return {
-            "id": self.rental_id,
-            "customer_id": self.customer_id,
-            "location_id": self.location_id,
-            "employee_id": self.employee_id,
-            "status": self.status,
-            "rented_at": self.rented_at.isoformat() if self.rented_at else None,
-            "returned_at": self.returned_at.isoformat() if self.returned_at else None,
-            "due_at": self.due_at.isoformat() if self.due_at else None,
-            "reserved_at": self.reserved_at.isoformat() if self.reserved_at else None,
-            "items": [
-                {
-                    "rental_item_id": item.rental_item_id,
-                    "inventory_item_id": item.inventory_item_id,
-                    "movie_id": item.movie_id,
-                    "format_id": item.format_id,
+        payload = self.to_dict()
+        payload["items"] = [
+            {
+                "rental_item_id": item.rental_item_id,
+                "inventory_item_id": item.inventory_item_id,
+                "movie_id": item.movie_id,
+                "format_id": item.format_id,
+            }
+            for item in self.items
+        ]
+        
+        payload["payments"] = [
+            {
+                "payment_id": payment.payment_id,
+                "amount_dkk": float(payment.amount_dkk),
+                "created_at": payment.created_at.isoformat()
+                if payment.created_at
+                else None,
+            }
+            for payment in self.payments
+        ]
+
+        payload["fees"] = [
+            {
+                "rental_fee_id": fee.rental_fee_id,
+                "fee_id": fee.fee_id,
+                "amount_dkk": float(fee.amount_dkk),
+                "snapshot": {
+                    "fee_type": fee.snapshot.fee_type,
+                    "default_amount_dkk": float(fee.snapshot.default_amount_dkk),
                 }
-                for item in self.items
-            ],
-            "payments": [
-                {
-                    "payment_id": payment.payment_id,
-                    "amount_dkk": float(payment.amount_dkk) if payment.amount_dkk else None,
-                    "created_at": payment.created_at.isoformat() if payment.created_at else None,
-                }
-                for payment in self.payments
-            ],
-            "fees": [
-                {
-                    "rental_fee_id": fee.rental_fee_id,
-                    "fee_id": fee.fee_id,
-                    "amount_dkk": float(fee.amount_dkk) if fee.amount_dkk else None,
-                    "snapshot": {
-                        "fee_type": fee.snapshot.fee_type,
-                        "default_amount_dkk": float(fee.snapshot.default_amount_dkk) if fee.snapshot.default_amount_dkk else None,
-                    } if fee.snapshot else None,
-                }
-                for fee in self.fees
-            ],
-            "promo": {
+                if fee.snapshot
+                else None,
+            }
+            for fee in self.fees
+        ]
+
+        if self.promo:
+            payload["promo"] = {
                 "promo_code_id": self.promo.promo_code_id,
                 "code": self.promo.code,
-                "percent_off": float(self.promo.percent_off) if self.promo.percent_off else None,
-                "amount_off_dkk": float(self.promo.amount_off_dkk) if self.promo.amount_off_dkk else None,
-                "starts_at": self.promo.starts_at.isoformat() if self.promo.starts_at else None,
-                "ends_at": self.promo.ends_at.isoformat() if self.promo.ends_at else None,
-            } if self.promo else None,
-        }
+                "percent_off": float(self.promo.percent_off)
+                if self.promo.percent_off
+                else None,
+                "amount_off_dkk": float(self.promo.amount_off_dkk)
+                if self.promo.amount_off_dkk
+                else None,
+                "starts_at": self.promo.starts_at.isoformat()
+                if self.promo.starts_at
+                else None,
+                "ends_at": self.promo.ends_at.isoformat()
+                if self.promo.ends_at
+                else None,
+            }
+        else:
+            payload["promo"] = None
+        return payload

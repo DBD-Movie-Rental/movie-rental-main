@@ -14,8 +14,7 @@ class MongoBaseRepository(Generic[DocT]):
 
     Assumes:
       - the model has a .to_dict() method returning a serializable dict
-        OR we'll fall back to a simple best-effort dict (ignoring internals).
-      - lookups are by a logical ID field (e.g. "customer_id") you pass in.
+      - lookups are by a logical ID field (e.g. "customer_id").
     """
 
     def __init__(self, model: Type[DocT], id_field: str = "id"):

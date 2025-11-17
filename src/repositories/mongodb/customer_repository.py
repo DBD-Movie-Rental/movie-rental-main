@@ -6,34 +6,26 @@ from .odm_models.customer_document import Customer
 
 
 class CustomerRepositoryMongo(MongoBaseRepository[Customer]):
-    def __init__(self):
-        # Lookups by logical customer_id (shared with MySQL)
+    def __init__(self) -> None:
+        # Logical ID field is "customer_id" on the Document
         super().__init__(Customer, id_field="customer_id")
 
     def create(self, data: dict) -> dict:
         """
-        Override create to:
-          - validate required fields
-          - set created_at if not provided
-          - optionally handle embedded docs
+        For now: require the full customer payload that matches the ODM.
+        If you're only doing reads from Mongo in the API, you can even
+        raise NotImplementedError here.
         """
-        required = ["first_name", "last_name", "email", "phone_number"]
-        missing = [f for f in required if not data.get(f)]
-        if missing:
-            raise ValueError(f"Missing fields: {', '.join(missing)}")
+        # Default created_at if missing
+        if "created_at" not in data:
+            data["created_at"] = datetime.utcnow()
 
-        payload = {
-            "customer_id": data.get("customer_id"),   # may come from migration or API
-            "first_name": data["first_name"],
-            "last_name": data["last_name"],
-            "email": data["email"],
-            "phone_number": data["phone_number"],
-            "created_at": data.get("created_at") or datetime.utcnow(),
-        }
-
-        # TODO (if you want): map nested address / membership_plan from data
-        # e.g. payload["address"] = Address(...)
-
-        doc = Customer(**payload)
+        doc = self.model(**data)
         doc.save()
-        return doc.to_dict()
+        return self._to_dict(doc)
+
+    def get_details(self, customer_id: int) -> dict | None:
+        doc = self.model.objects(customer_id=customer_id).first()
+        if not doc:
+            return None
+        return doc.to_detailed_dict()
