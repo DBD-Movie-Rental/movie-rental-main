@@ -85,9 +85,9 @@ Swagger UI: `http://localhost:5004/api/v1/docs`
 OpenAPI Spec: `http://localhost:5004/openapi/v1.yaml`
 
 
-## Setup (Docker – API + MySQL)
+## Setup (Docker – API + MySQL + MongoDB)
 
-Run both the API and MySQL inside Docker.
+Run both the API, MySQL and MongoDB inside Docker.
 
 ```bash
 # 1. Clone the repository
