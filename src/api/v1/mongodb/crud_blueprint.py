@@ -19,6 +19,20 @@ def make_crud_blueprint(resource_name: str, repo, id_converter: str = "int") -> 
             return jsonify(items), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+        
+    # GET /<resource>/detailed
+    @bp.get(f"/{resource_name}/detailed")
+    def list_resources_detailed():
+        try:
+            if not hasattr(repo, "get_all_details"):
+                return jsonify(
+                    {"error": "Detailed list not supported for this resource"}
+                ), 400
+
+            items = repo.get_all_details()
+            return jsonify(items), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
     # GET /<resource>/<id>
     @bp.get(f"/{resource_name}/<{id_converter}:item_id>")
@@ -27,6 +41,23 @@ def make_crud_blueprint(resource_name: str, repo, id_converter: str = "int") -> 
             item = repo.get_by_id(item_id)
             if not item:
                 return jsonify({"error": "Not found"}), 404
+            return jsonify(item), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+    # GET /<resource>/<id>/detailed
+    @bp.get(f"/{resource_name}/<{id_converter}:item_id>/detailed")
+    def get_resource_details(item_id):  # type: ignore[no-redef]
+        try:
+            if not hasattr(repo, "get_details"):
+                return jsonify(
+                    {"error": "Detailed view not supported for this resource"}
+                ), 400
+
+            item = repo.get_details(item_id)
+            if not item:
+                return jsonify({"error": "Not found"}), 404
+
             return jsonify(item), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
@@ -65,23 +96,6 @@ def make_crud_blueprint(resource_name: str, repo, id_converter: str = "int") -> 
             if not ok:
                 return jsonify({"error": "Not found"}), 404
             return ("", 204)
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-
-    # GET /<resource>/<id>/details  ← Mongo-specific
-    @bp.get(f"/{resource_name}/<{id_converter}:item_id>/details")
-    def get_resource_details(item_id):  # type: ignore[no-redef]
-        try:
-            if not hasattr(repo, "get_details"):
-                return jsonify(
-                    {"error": "Detailed view not supported for this resource"}
-                ), 400
-
-            item = repo.get_details(item_id)
-            if not item:
-                return jsonify({"error": "Not found"}), 404
-
-            return jsonify(item), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 

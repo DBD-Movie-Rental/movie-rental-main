@@ -25,7 +25,13 @@ class CustomerRepositoryMongo(MongoBaseRepository[Customer]):
         return self._to_dict(doc)
 
     def get_details(self, customer_id: int) -> dict | None:
+        """Single detailed customer: /customers/<id>/details"""
         doc = self.model.objects(customer_id=customer_id).first()
         if not doc:
             return None
         return doc.to_detailed_dict()
+
+    def get_all_details(self) -> list[dict]:
+        """All detailed customers: /customers/detailed"""
+        docs = self.model.objects()
+        return [doc.to_detailed_dict() for doc in docs]
