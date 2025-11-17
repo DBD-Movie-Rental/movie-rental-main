@@ -1,0 +1,960 @@
+openapi: 3.0.3
+info:
+  title: Movie Rental API - MongoDB
+  version: 1.0.0
+servers:
+- url: http://127.0.0.1:5004
+  description: Local dev
+tags:
+- name: MySQL
+  description: All MySQL CRUD endpoints
+- name: MongoDB
+  description: All MongoDB CRUD endpoints
+- name: Neo4j
+  description: All Neo4j CRUD endpoints
+paths:
+  /api/v1/mongodb/health:
+    get:
+      tags:
+      - MongoDB
+      summary: MongoDB health
+      responses:
+        '200':
+          description: OK
+  /api/v1/mongodb/customers:
+    get:
+      tags:
+      - MongoDB
+      summary: List customers (flat, MySQL-like shape)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/customers/detailed:
+    get:
+      tags:
+      - MongoDB
+      summary: List customers with embedded address + membership + recent rentals
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoCustomerDetailed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/customers/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get customer by id (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/customers/{id}/details:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get customer by id (with embedded details)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoCustomerDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/movies:
+    get:
+      tags:
+      - MongoDB
+      summary: List movies (flat, MySQL-like shape)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/movies/detailed:
+    get:
+      tags:
+      - MongoDB
+      summary: List movies with embedded reviews + genres array
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoMovieDetailed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/movies/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get movie by id (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/movies/{id}/details:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get movie by id (with embedded details)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoMovieDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/locations:
+    get:
+      tags:
+      - MongoDB
+      summary: List locations (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/locations/detailed:
+    get:
+      tags:
+      - MongoDB
+      summary: List locations with embedded employees + inventory items
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoLocationDetailed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/locations/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get location by id (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/locations/{id}/details:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get location by id (with embedded employees + inventory)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoLocationDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/rentals:
+    get:
+      tags:
+      - MongoDB
+      summary: List rentals (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rental'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/rentals/detailed:
+    get:
+      tags:
+      - MongoDB
+      summary: List rentals with items, payments, fees and promo snapshot
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoRentalDetailed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/rentals/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get rental by id (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rental'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/rentals/{id}/details:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get rental by id (with embedded details)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoRentalDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/genres:
+    get:
+      tags:
+      - MongoDB
+      summary: List MongoDB genres (lookup)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Genre'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/formats:
+    get:
+      tags:
+      - MongoDB
+      summary: List MongoDB formats (lookup)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Format'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/membership_types:
+    get:
+      tags:
+      - MongoDB
+      summary: List MongoDB membership types (lookup)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoMembershipType'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/fee_types:
+    get:
+      tags:
+      - MongoDB
+      summary: List MongoDB fee types (lookup)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoFeeType'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/v1/mongodb/promo_codes:
+    get:
+      tags:
+      - MongoDB
+      summary: List MongoDB promo codes (lookup)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoPromoCode'
+        '500':
+          $ref: '#/components/responses/ServerError'
+components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  responses:
+    BadRequest:
+      description: Bad Request
+    NotFound:
+      description: Not Found
+    ServerError:
+      description: Internal Server Error
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    CustomerCreate:
+      type: object
+      required:
+      - first_name
+      - last_name
+      - email
+      - phone_number
+      - address
+      - city
+      - post_code
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone_number:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        post_code:
+          type: string
+    Genre:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    GenreCreate:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        release_year:
+          type: integer
+        runtime_min:
+          type: integer
+        rating:
+          type: number
+          format: float
+        summary:
+          type: string
+    MovieCreate:
+      type: object
+      required:
+      - title
+      - release_year
+      - runtime_min
+      properties:
+        title:
+          type: string
+        release_year:
+          type: integer
+        runtime_min:
+          type: integer
+        rating:
+          type: number
+          format: float
+        summary:
+          type: string
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        email:
+          type: string
+          format: email
+        is_active:
+          type: boolean
+    EmployeeCreate:
+      type: object
+      required:
+      - first_name
+      - last_name
+      - phone_number
+      - email
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        email:
+          type: string
+          format: email
+        is_active:
+          type: boolean
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+        address:
+          type: string
+        city:
+          type: string
+        post_code:
+          type: string
+        customer_id:
+          type: integer
+    Fee:
+      type: object
+      properties:
+        id:
+          type: integer
+        fee_type:
+          type: string
+          enum:
+          - LATE
+          - DAMAGED
+          - OTHER
+        amount_dkk:
+          type: number
+          format: float
+    Format:
+      type: object
+      properties:
+        id:
+          type: integer
+        format:
+          type: string
+          enum:
+          - DVD
+          - BLU-RAY
+          - VHS
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+        address:
+          type: string
+        city:
+          type: string
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        location_id:
+          type: integer
+        format_id:
+          type: integer
+        movie_id:
+          type: integer
+        status:
+          type: integer
+    Membership:
+      type: object
+      properties:
+        id:
+          type: integer
+        membership:
+          type: string
+          enum:
+          - GOLD
+          - SILVER
+          - BRONZE
+    MembershipPlan:
+      type: object
+      properties:
+        id:
+          type: integer
+        monthly_cost:
+          type: number
+          format: float
+        starts_on:
+          type: string
+          format: date-time
+        ends_on:
+          type: string
+          format: date-time
+        membership_id:
+          type: integer
+        customer_id:
+          type: integer
+    PromoCode:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        description:
+          type: string
+        percent_off:
+          type: number
+          format: float
+        amount_off_dkk:
+          type: number
+          format: float
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+    Rental:
+      type: object
+      properties:
+        id:
+          type: integer
+        rented_at_datetime:
+          type: string
+          format: date-time
+        returned_at_datetime:
+          type: string
+          format: date-time
+        due_at_datetime:
+          type: string
+          format: date-time
+        reserved_at_datetime:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - RESERVED
+          - OPEN
+          - RETURNED
+          - LATE
+          - CANCELLED
+        customer_id:
+          type: integer
+        promo_code_id:
+          type: integer
+          nullable: true
+        employee_id:
+          type: integer
+          nullable: true
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+        amount_dkk:
+          type: number
+          format: float
+        created_at:
+          type: string
+          format: date-time
+        rental_id:
+          type: integer
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        movie_id:
+          type: integer
+    MongoCustomerAddress:
+      type: object
+      properties:
+        address_id:
+          type: integer
+        address:
+          type: string
+        city:
+          type: string
+        post_code:
+          type: string
+    MongoCustomerMembershipPlan:
+      type: object
+      properties:
+        membership_plan_id:
+          type: integer
+        membership_type:
+          type: string
+          enum:
+          - GOLD
+          - SILVER
+          - BRONZE
+        starts_on:
+          type: string
+          format: date-time
+        ends_on:
+          type: string
+          format: date-time
+          nullable: true
+        monthly_cost_dkk:
+          type: number
+        membership_id:
+          type: integer
+    MongoCustomerRecentRental:
+      type: object
+      properties:
+        rental_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - RESERVED
+          - OPEN
+          - RETURNED
+          - LATE
+          - CANCELLED
+        rented_at_datetime:
+          type: string
+          format: date-time
+    MongoCustomerDetailed:
+      allOf:
+      - $ref: '#/components/schemas/Customer'
+      - type: object
+        properties:
+          address:
+            $ref: '#/components/schemas/MongoCustomerAddress'
+          membership_plan:
+            $ref: '#/components/schemas/MongoCustomerMembershipPlan'
+          recent_rentals:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoCustomerRecentRental'
+    MongoMovieReview:
+      type: object
+      properties:
+        review_id:
+          type: integer
+        movie_id:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+        body:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        customer_id:
+          type: integer
+          nullable: true
+    MongoMovieDetailed:
+      allOf:
+      - $ref: '#/components/schemas/Movie'
+      - type: object
+        properties:
+          genres:
+            type: array
+            items:
+              type: string
+          reviews:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoMovieReview'
+    MongoLocationEmployee:
+      type: object
+      properties:
+        employee_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+          nullable: true
+        email:
+          type: string
+        is_active:
+          type: boolean
+    MongoLocationInventoryItem:
+      type: object
+      properties:
+        inventory_item_id:
+          type: integer
+        movie_id:
+          type: integer
+        format_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - AVAILABLE
+          - RENTED
+          - DAMAGED
+          - RETIRED
+    MongoLocationDetailed:
+      allOf:
+      - $ref: '#/components/schemas/Location'
+      - type: object
+        properties:
+          employees:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoLocationEmployee'
+          inventory:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoLocationInventoryItem'
+    MongoRentalItem:
+      type: object
+      properties:
+        rental_item_id:
+          type: integer
+        inventory_item_id:
+          type: integer
+        movie_id:
+          type: integer
+        format_id:
+          type: integer
+    MongoRentalPayment:
+      type: object
+      properties:
+        payment_id:
+          type: integer
+        amount_dkk:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+    MongoRentalFeeSnapshot:
+      type: object
+      properties:
+        fee_type:
+          type: string
+          nullable: true
+        default_amount_dkk:
+          type: number
+          nullable: true
+    MongoRentalFee:
+      type: object
+      properties:
+        rental_fee_id:
+          type: integer
+        fee_id:
+          type: integer
+        amount_dkk:
+          type: number
+        snapshot:
+          $ref: '#/components/schemas/MongoRentalFeeSnapshot'
+    MongoRentalPromoSnapshot:
+      type: object
+      properties:
+        promo_code_id:
+          type: integer
+          nullable: true
+        code:
+          type: string
+          nullable: true
+        percent_off:
+          type: number
+          nullable: true
+        amount_off_dkk:
+          type: number
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+    MongoRentalDetailed:
+      allOf:
+      - $ref: '#/components/schemas/Rental'
+      - type: object
+        properties:
+          location_id:
+            type: integer
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoRentalItem'
+          payments:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoRentalPayment'
+          fees:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoRentalFee'
+          promo:
+            $ref: '#/components/schemas/MongoRentalPromoSnapshot'
+    MongoMembershipType:
+      type: object
+      properties:
+        membership_id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - GOLD
+          - SILVER
+          - BRONZE
+    MongoFeeType:
+      type: object
+      properties:
+        fee_id:
+          type: integer
+        fee_type:
+          type: string
+          enum:
+          - LATE
+          - DAMAGED
+          - OTHER
+        default_amount_dkk:
+          type: number
+    MongoPromoCode:
+      type: object
+      properties:
+        promo_code_id:
+          type: integer
+        code:
+          type: string
+        description:
+          type: string
+          nullable: true
+        percent_off:
+          type: number
+          nullable: true
+        amount_off_dkk:
+          type: number
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time

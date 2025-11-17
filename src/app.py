@@ -25,7 +25,7 @@ def create_app():
 
     # Swagger/OpenAPI docs
     SWAGGER_URL = "/api/v1/docs"
-    API_URL = "/openapi/v1.yaml"
+    API_URL = "/openapi/openapi.yaml"
 
     swaggerui_bp = get_swaggerui_blueprint(
         SWAGGER_URL,
@@ -40,7 +40,7 @@ def create_app():
     def openapi_yaml():
         # Serve the static OpenAPI YAML from repo root: ../openapi/v1.yaml
         openapi_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "openapi"))
-        return send_from_directory(openapi_dir, "v1.yaml")
+        return send_from_directory(openapi_dir, "openapi.yaml")
 
     return app
 
