@@ -1,27 +1,37 @@
+# src/repositories/mongodb/customer_repository.py
 from datetime import datetime
+
+from .base_repository import MongoBaseRepository
 from .odm_models.customer_document import Customer
 
-class CustomerRepositoryMongo:
-    def get_all_customers(self) -> list[dict]:
-        customers = Customer.objects()
-        return [c.to_dict() for c in customers]
 
-    def get_customer(self, customer_id: int) -> dict | None:
-        customer = Customer.objects(customer_id=customer_id).first()
-        return customer.to_dict() if customer else None
+class CustomerRepositoryMongo(MongoBaseRepository[Customer]):
+    def __init__(self) -> None:
+        # Logical ID field is "customer_id" on the Document
+        super().__init__(Customer, id_field="customer_id")
 
-    def create_customer(self, data: dict) -> int:
-        customer = Customer(
-            customer_id=data["customer_id"],
-            first_name=data["first_name"],
-            last_name=data["last_name"],
-            email=data["email"],
-            phone_number=data.get("phone_number"),
-            created_at=datetime.utcnow(),
-        )
-        customer.save()
-        return customer.customer_id
+    def create(self, data: dict) -> dict:
+        """
+        For now: require the full customer payload that matches the ODM.
+        If you're only doing reads from Mongo in the API, you can even
+        raise NotImplementedError here.
+        """
+        # Default created_at if missing
+        if "created_at" not in data:
+            data["created_at"] = datetime.utcnow()
 
-    def delete_customer(self, customer_id: int) -> bool:
-        res = Customer.objects(customer_id=customer_id).delete()
-        return res == 1  # number of docs deleted
+        doc = self.model(**data)
+        doc.save()
+        return self._to_dict(doc)
+
+    def get_details(self, customer_id: int) -> dict | None:
+        """Single detailed customer: /customers/<id>/details"""
+        doc = self.model.objects(customer_id=customer_id).first()
+        if not doc:
+            return None
+        return doc.to_detailed_dict()
+
+    def get_all_details(self) -> list[dict]:
+        """All detailed customers: /customers/detailed"""
+        docs = self.model.objects()
+        return [doc.to_detailed_dict() for doc in docs]

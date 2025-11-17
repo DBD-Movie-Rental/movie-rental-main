@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify
-bp=Blueprint('mongodb',__name__)
-@bp.get('/health')
+
+bp = Blueprint("mongodb_health", __name__)
+
+@bp.get("/health")
 def health():
-    return jsonify(dict(backend='mongodb', status='ok'))
+    return jsonify({"backend": "mongodb", "status": "ok"})

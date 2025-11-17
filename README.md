@@ -81,7 +81,7 @@ python -m src.app
 API will be available at: `http://localhost:5004`  
 MySQL will be available at: `localhost:3307` (user: `app`, password: `app`, db: `movie_rental`)
 
-Swagger UI: `http://localhost:5004/api/docs`  
+Swagger UI: `http://localhost:5004/api/v1/docs`  
 OpenAPI Spec: `http://localhost:5004/openapi/v1.yaml`
 
 
@@ -104,10 +104,10 @@ docker compose -f compose/docker-compose.dev.yml exec api python -m migrations.m
 docker ps
 ```
 
-API: `http://localhost:5004/api/v1/health`  
-MySQL: `localhost:3307`
+API: `http://127.0.0.1:5004/api/v1/health`  
+MySQL: `127.0.0.1:3307`
 
-Swagger UI: `http://localhost:5004/api/docs`
+Swagger UI: `http://127.0.0.1:5004/api/docs`
 
 
 ## Docker build only

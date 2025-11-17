@@ -66,8 +66,6 @@ class Customer(Document):
     def to_dict(self) -> dict:
         """
         Returns the common fields that match the MySQL-backed API.
-        This lets your routes switch repository (MySQL vs Mongo)
-        without changing the response shape.
         """
         return {
             "id": self.customer_id,
@@ -77,3 +75,40 @@ class Customer(Document):
             "phone_number": self.phone_number,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
+    
+    def to_detailed_dict(self) -> dict:
+        """Optional richer DTO exposing embedded info."""
+        payload = self.to_dict()
+        payload["address"] = {
+            "address_id": self.address.address_id,
+            "address": self.address.address,
+            "city": self.address.city,
+            "post_code": self.address.post_code,
+        } if self.address else None
+
+        payload["membership_plan"] = {
+            "membership_plan_id": self.membership_plan.membership_plan_id,
+            "membership_type": self.membership_plan.membership_type,
+            "starts_on": self.membership_plan.starts_on.isoformat()
+            if self.membership_plan and self.membership_plan.starts_on
+            else None,
+            "ends_on": self.membership_plan.ends_on.isoformat()
+            if self.membership_plan and self.membership_plan.ends_on
+            else None,
+            "monthly_cost_dkk": str(self.membership_plan.monthly_cost_dkk)
+            if self.membership_plan and self.membership_plan.monthly_cost_dkk
+            else None,
+        } if self.membership_plan else None
+
+        payload["recent_rentals"] = [
+            {
+                "rental_id": r.rental_id,
+                "status": r.status,
+                "rented_at_datetime": r.rented_at_datetime.isoformat()
+                if r.rented_at_datetime
+                else None,
+            }
+            for r in (self.recent_rentals or [])
+        ]
+
+        return payload

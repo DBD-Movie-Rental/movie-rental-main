@@ -1,32 +1,38 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint
+
+from .crud_blueprint import make_crud_blueprint  # the Mongo-specific one
+
 from src.repositories.mongodb.customer_repository import CustomerRepositoryMongo
+from src.repositories.mongodb.movie_repository import MovieRepositoryMongo
+from src.repositories.mongodb.location_repository import LocationRepositoryMongo
+from src.repositories.mongodb.rental_repository import RentalRepositoryMongo
+from src.repositories.mongodb.genre_repository import GenreRepositoryMongo
+from src.repositories.mongodb.format_repository import FormatRepositoryMongo
+from src.repositories.mongodb.promo_code_repository import PromoCodeRepositoryMongo
+from src.repositories.mongodb.membership_type_repository import MembershipTypeRepositoryMongo
+from src.repositories.mongodb.fee_type_repository import FeeTypeRepositoryMongo
 
+# Blueprint for MongoDB routes
 bp = Blueprint("mongodb_routes", __name__)
-repo = CustomerRepositoryMongo()
 
+# Initialize repositories
+customer_repo = CustomerRepositoryMongo()
+movie_repo = MovieRepositoryMongo()
+location_repo = LocationRepositoryMongo()
+rental_repo = RentalRepositoryMongo()
+genre_repo = GenreRepositoryMongo()
+format_repo = FormatRepositoryMongo()
+promo_code_repo = PromoCodeRepositoryMongo()
+membership_type_repo = MembershipTypeRepositoryMongo()
+fee_type_repo = FeeTypeRepositoryMongo()
 
-@bp.get("/customers")
-def get_customers():
-    try:
-        customers = repo.get_all_customers()
-        return jsonify(customers), 200
-    except Exception as e:
-        return jsonify({"error": "Failed to fetch customers", "details": str(e)}), 500
-
-
-@bp.get("/customers/<int:customer_id>")
-def get_customer(customer_id: int):
-    try:
-        customer = repo.get_customer(customer_id)
-        if customer is None:
-            return jsonify({"error": "Customer not found"}), 404
-        return jsonify(customer), 200
-    except Exception as e:
-        return jsonify({"error": "Failed to fetch customer", "details": str(e)}), 500
-
-
-# Customer id releys on auto-generated MySQL ID, so creation is not supported here
-# TODO: Implement a workaround if needed - maybe UUIDs?
-@bp.post("/customers")
-def create_customer():
-    return jsonify({"error": "Creating customers is not supported in MongoDB repository"}), 501
+# Register CRUD blueprints for each resource
+bp.register_blueprint(make_crud_blueprint("customers", customer_repo, id_converter="int"))
+bp.register_blueprint(make_crud_blueprint("movies", movie_repo, id_converter="int"))
+bp.register_blueprint(make_crud_blueprint("locations", location_repo, id_converter="int"))
+bp.register_blueprint(make_crud_blueprint("rentals", rental_repo, id_converter="int"))
+bp.register_blueprint(make_crud_blueprint("genres", genre_repo, id_converter="int"))
+bp.register_blueprint(make_crud_blueprint("formats", format_repo, id_converter="int"))
+bp.register_blueprint(make_crud_blueprint("promo_codes", promo_code_repo, id_converter="int"))
+bp.register_blueprint(make_crud_blueprint("membership_types", membership_type_repo, id_converter="int"))
+bp.register_blueprint(make_crud_blueprint("fee_types", fee_type_repo, id_converter="int"))
