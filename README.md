@@ -5,6 +5,7 @@
 ![Neo4j](https://img.shields.io/badge/Neo4j-latest-blue?logo=neo4j&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-3.1.2-black?logo=flask&logoColor=white)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.44-red?logo=python&logoColor=white)
+![MongoEngine](https://img.shields.io/badge/MongoEngine-0.29.1-green?logo=mongodb&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-20.10%2B-blue?logo=docker&logoColor=white)
 
 A movie rental system based on a vintage physical rental store.  
