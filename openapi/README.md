@@ -1,22 +1,86 @@
-# OpenAPI Folder Structure
+# Movie Rental API – OpenAPI Files
 
-This folder contains the OpenAPI specification for the Movie Rental API, split by database technology for clarity and maintainability.
+This project uses **OpenAPI 3.0.3** to describe a Movie Rental API.  
+The spec is split into files to keep things readable and separated by responsibility.
 
-## Files and Separation of Concerns (SoC)
+---
 
-- **openapi.yaml**
-  - Main entry point. References all database-specific specs using `$ref`.
-- **openapi-mysql.yaml**
-  - Contains all MySQL endpoints, tags, and components (schemas, parameters, responses) relevant to MySQL operations.
-- **openapi-mongodb.yaml**
-  - Contains all MongoDB endpoints, tags, and components relevant to MongoDB operations.
-- **openapi-neo4j.yaml**
-  - Contains all Neo4j endpoints, tags, and components relevant to Neo4j operations.
+## Files
 
-## How to Use
+```text
+.
+├── openapi.yaml
+├── openapi-mysql.yaml
+├── openapi-mongodb.yaml
+└── openapi-neo4j.yaml
+```
 
-Edit each database-specific file to update or add endpoints, schemas, or other OpenAPI components for that technology. The main `openapi.yaml` will aggregate them for documentation and tooling.
+### `openapi.yaml` (main file)
 
-## Notes
-- Use `$ref` to keep specs modular and DRY.
-- Each file should only contain endpoints and components for its respective database.
+- Full API in one file.
+- Includes **all** paths:
+  - `/api/v1/mysql/...`
+  - `/api/v1/mongodb/...`
+  - `/api/v1/neo4j/...`
+- Also contains shared `components` (schemas, parameters, responses).
+
+---
+
+### `openapi-mysql.yaml`
+
+- Only MySQL endpoints:
+
+  ```yaml
+  paths:
+    /api/v1/mysql/...: ...
+  ```
+
+- Still has the same `info`, `servers`, `tags`, and `components` as the main file.
+
+**Purpose:** Relational CRUD API (tables like customers, movies, rentals).
+
+---
+
+### `openapi-mongodb.yaml`
+
+- Only MongoDB endpoints:
+
+  ```yaml
+  paths:
+    /api/v1/mongodb/...: ...
+  ```
+
+- Same shared `components`.
+
+**Purpose:** Read models and “detailed”/embedded views (documents with nested data).
+
+---
+
+### `openapi-neo4j.yaml`
+
+- Only Neo4j endpoints:
+
+  ```yaml
+  paths:
+    /api/v1/neo4j/...: ...
+  ```
+
+- Same shared `components`.
+
+**Purpose:** Graph-related API (currently health, future relationship queries).
+
+---
+
+## Why split the files?
+
+- Easier to read and work on one backend at a time.
+- Clear **Separation of Concerns (SoC)**:
+  - MySQL = relational CRUD
+  - MongoDB = document read models
+  - Neo4j = graph
+- Each file is a **valid OpenAPI spec**, so you can:
+  - Load it in Swagger UI
+  - Generate clients
+  - Use it in tests
+
+Pick the file that matches the part of the system you’re working on, or use `openapi.yaml` for everything.
