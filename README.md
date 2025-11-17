@@ -27,12 +27,12 @@ The goal is to showcase practical, side-by-side implementations using ORM/ODM/OG
 
 ---
 
-## Database Design – MySQL EER Diagram
+## Database Design – MySQL ER Diagram
 
-The core relational model for the project is captured in an Enhanced Entity–Relationship (EER) diagram.  
+The core relational model for the project is captured in an Entity–Relationship (ER) diagram.  
 It shows how customers, rentals, inventory, payments, memberships, and fees are connected in the MySQL schema.
 
-![MySQL EER Diagram](./docs/EER_Diagram.svg)
+![MySQL ER Diagram](./docs/ER_Diagram.svg)
 
 ---
 
