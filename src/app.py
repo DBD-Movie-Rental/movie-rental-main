@@ -4,7 +4,6 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from src.repositories.mongodb.connection import init_mongo
 from .api.v1.mysql.health import bp as mysql_health_bp
 from .api.v1.mysql.routes import bp as mysql_routes_bp
-from .api.v1.mongodb.health import bp as mongodb_health_bp
 from .api.v1.mongodb.routes import bp as mongodb_routes_bp
 
 def create_app():
@@ -16,7 +15,6 @@ def create_app():
     app.register_blueprint(mysql_health_bp, url_prefix="/api/v1/mysql")
     app.register_blueprint(mysql_routes_bp, url_prefix="/api/v1/mysql")
 
-    app.register_blueprint(mongodb_health_bp, url_prefix="/api/v1/mongodb")
     app.register_blueprint(mongodb_routes_bp, url_prefix="/api/v1/mongodb")
 
     @app.get("/api/v1/health")

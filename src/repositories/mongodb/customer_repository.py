@@ -1,27 +1,39 @@
+# src/repositories/mongodb/customer_repository.py
 from datetime import datetime
+
+from .base_repository import MongoBaseRepository
 from .odm_models.customer_document import Customer
 
-class CustomerRepositoryMongo:
-    def get_all_customers(self) -> list[dict]:
-        customers = Customer.objects()
-        return [c.to_dict() for c in customers]
 
-    def get_customer(self, customer_id: int) -> dict | None:
-        customer = Customer.objects(customer_id=customer_id).first()
-        return customer.to_dict() if customer else None
+class CustomerRepositoryMongo(MongoBaseRepository[Customer]):
+    def __init__(self):
+        # Lookups by logical customer_id (shared with MySQL)
+        super().__init__(Customer, id_field="customer_id")
 
-    def create_customer(self, data: dict) -> int:
-        customer = Customer(
-            customer_id=data["customer_id"],
-            first_name=data["first_name"],
-            last_name=data["last_name"],
-            email=data["email"],
-            phone_number=data.get("phone_number"),
-            created_at=datetime.utcnow(),
-        )
-        customer.save()
-        return customer.customer_id
+    def create(self, data: dict) -> dict:
+        """
+        Override create to:
+          - validate required fields
+          - set created_at if not provided
+          - optionally handle embedded docs
+        """
+        required = ["first_name", "last_name", "email", "phone_number"]
+        missing = [f for f in required if not data.get(f)]
+        if missing:
+            raise ValueError(f"Missing fields: {', '.join(missing)}")
 
-    def delete_customer(self, customer_id: int) -> bool:
-        res = Customer.objects(customer_id=customer_id).delete()
-        return res == 1  # number of docs deleted
+        payload = {
+            "customer_id": data.get("customer_id"),   # may come from migration or API
+            "first_name": data["first_name"],
+            "last_name": data["last_name"],
+            "email": data["email"],
+            "phone_number": data["phone_number"],
+            "created_at": data.get("created_at") or datetime.utcnow(),
+        }
+
+        # TODO (if you want): map nested address / membership_plan from data
+        # e.g. payload["address"] = Address(...)
+
+        doc = Customer(**payload)
+        doc.save()
+        return doc.to_dict()
