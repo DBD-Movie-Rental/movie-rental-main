@@ -81,11 +81,14 @@ source .venv/bin/activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Start MySQL + MongoDB containers
+# 4. Start MySQL + MongoDB containers (in Docker)
 docker compose -f compose/docker-compose.dev.yml up -d mysql mongodb
 
-# 5. Run the Flask API locally
-python -m src.app
+# 5. Run the migration script (from your local shell)
+python3 -m migrations.migrate_sql_to_mongo
+
+# 6. Start the Flask API locally
+python3 -m src.app
 ```
 
 API will be available at: `http://127.0.0.1:5004`  
