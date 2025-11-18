@@ -193,6 +193,8 @@ CREATE TABLE movie_genre (
     ON UPDATE CASCADE
 );
 
+UNIQUE KEY idx_movie_genre_movie_genre ON movie_genre (movie_id, genre_id);
+
 -- -----------------------------------------------------
 -- Table promo_code
 -- -----------------------------------------------------
@@ -315,6 +317,8 @@ CREATE TABLE rental_item (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
+
+CREATE UNIQUE INDEX idx_rental_inventory_item ON rental_item (rental_id, inventory_item_id);
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
