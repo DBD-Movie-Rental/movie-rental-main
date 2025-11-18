@@ -223,7 +223,7 @@ CREATE TABLE rental (
   status ENUM('RESERVED', 'OPEN', 'RETURNED', 'LATE', 'CANCELLED') NOT NULL,
   customer_id INT NOT NULL,
   promo_code_id INT NULL,
-  employee_id INT NULL,
+  employee_id INT NOT NULL,
   PRIMARY KEY (rental_id),
   CONSTRAINT fk_rental_customer
     FOREIGN KEY (customer_id)
