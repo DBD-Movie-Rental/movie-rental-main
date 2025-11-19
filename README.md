@@ -120,7 +120,7 @@ docker ps
 API: `http://127.0.0.1:5004/api/v1/health`  
 MySQL: `127.0.0.1:3307`
 
-Swagger UI: `http://127.0.0.1:5004/api/docs`
+Swagger UI: `http://127.0.0.1:5004/api/v1/docs`
 
 
 ## Docker build only
