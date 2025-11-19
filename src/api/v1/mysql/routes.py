@@ -16,7 +16,10 @@ from src.repositories.mysql.payment_repository import PaymentRepository
 from src.repositories.mysql.review_repository import ReviewRepository
 from .crud_blueprint import make_crud_blueprint
 
+# Blueprint for MySQL routes
 bp = Blueprint("mysql_routes", __name__)
+
+# Initialize repositories
 repo = CustomerRepository()
 genre_repo = GenreRepository()
 movie_repo = MovieRepository()
