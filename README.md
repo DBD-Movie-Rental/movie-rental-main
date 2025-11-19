@@ -110,7 +110,7 @@ cd movie-rental-main
 # 2. Built docker compose and run
 docker compose -f compose/docker-compose.dev.yml up --build -d
 
-# 3. Run mysql --> mongodb migration
+# 3. Run mysql --> mongodb migration from api container
 docker compose -f compose/docker-compose.dev.yml exec api python -m migrations.migrate_sql_to_mongo
 
 # 3. (Optional) Check running containers
