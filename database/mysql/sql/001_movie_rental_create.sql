@@ -193,8 +193,7 @@ CREATE TABLE movie_genre (
     ON UPDATE CASCADE
 );
 
-UNIQUE KEY idx_movie_genre_movie_genre ON movie_genre (movie_id, genre_id);
-
+CREATE UNIQUE INDEX idx_movie_genre_movie_genre ON movie_genre (movie_id, genre_id);
 -- -----------------------------------------------------
 -- Table promo_code
 -- -----------------------------------------------------
