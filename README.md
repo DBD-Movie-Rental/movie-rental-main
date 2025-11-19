@@ -50,7 +50,7 @@ It shows how collections, embedded documents, and references represent the same 
 
 Interactive API docs are available after starting the Flask app:
 
-- Swagger UI: `http://localhost:5004/api/docs`
+- Swagger UI: `http://localhost:5004/api/v1/docs`
 - Raw OpenAPI YAML: `http://localhost:5004/openapi/v1.yaml`
 
 ---
