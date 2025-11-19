@@ -59,7 +59,7 @@ def make_crud_blueprint(resource_name: str, repo, id_converter: str = "int") -> 
             ok = repo.delete(item_id)
             if not ok:
                 return jsonify({"error": "Not found"}), 404
-            return ("", 204)
+            return ({"message": "Deleted"}, 204)
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
