@@ -85,8 +85,21 @@ promo_codes_bp = make_crud_blueprint("promo_codes", promo_code_repo, id_converte
 bp.register_blueprint(promo_codes_bp)
 
 # Register generic CRUD routes for rentals
+# NOTE: RentalRepository.create() is overridden to call the create_rental stored procedure.
 rentals_bp = make_crud_blueprint("rentals", rental_repo, id_converter="int")
 bp.register_blueprint(rentals_bp)
+
+# Custom endpoint for creating rental reservations via stored procedure
+@bp.post("/rentals/reservations")
+def create_rental_reservation():
+    payload = request.get_json() or {}
+    try:
+        reservation = rental_repo.create_reservation(payload)
+        return jsonify(reservation), 201
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Register generic CRUD routes for payments
 payments_bp = make_crud_blueprint("payments", payment_repo, id_converter="int")
