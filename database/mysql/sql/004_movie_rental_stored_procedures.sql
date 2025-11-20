@@ -111,6 +111,8 @@ BEGIN
         RESIGNAL;
     END;
 
+    START TRANSACTION;
+
     -- 1) Availability check
     CALL verify_inventory_items_available(p_inventory_items, v_all_available);
 
@@ -120,8 +122,6 @@ BEGIN
     END IF;
 
     -- 2) Transaction for writes
-    START TRANSACTION;
-
     SET v_now = NOW();
     SET v_due = DATE_ADD(v_now, INTERVAL 7 DAY); -- standard 7 days
 
@@ -185,6 +185,8 @@ BEGIN
         RESIGNAL;
     END;
 
+    START TRANSACTION;
+
     -- 1) Availability check (reuse existing logic)
     CALL verify_inventory_items_available(p_inventory_items, v_all_available);
 
@@ -194,8 +196,6 @@ BEGIN
     END IF;
 
     -- 2) Transaction for writes
-    START TRANSACTION;
-
     SET v_now = NOW();
 
     INSERT INTO rental (
