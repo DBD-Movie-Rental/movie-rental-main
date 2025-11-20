@@ -20,14 +20,31 @@ paths:
       summary: MySQL health
       responses:
         '200':
-          description: OK
-  /api/v1/mysql/customers:
-    get:
+    post:
       tags:
       - MySQL
-      summary: List customers
+      summary: Create rental
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentalCreate'
       responses:
-        '200':
+        '201':
+            /api/v1/mysql/rentals/reservations:
+              post:
+                tags:
+                - MySQL
+                summary: Create rental reservation
+                requestBody:
+                  required: true
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/RentalCreate'
+                responses:
+                  '201':
           description: OK
           content:
             application/json:
@@ -995,6 +1012,20 @@ components:
     Movie:
       type: object
       properties:
+    RentalCreate:
+      type: object
+      required:
+        - customer_id
+        - inventory_item_id
+        - rental_date
+      properties:
+        customer_id:
+          type: integer
+        inventory_item_id:
+          type: integer
+        rental_date:
+          type: string
+          format: date-time
         id:
           type: integer
         title:

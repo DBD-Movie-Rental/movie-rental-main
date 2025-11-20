@@ -20,14 +20,31 @@ paths:
       summary: MySQL health
       responses:
         '200':
-          description: OK
-  /api/v1/mongodb/health:
-    get:
+    post:
       tags:
-      - MongoDB
-      summary: MongoDB health
+      - MySQL
+      summary: Create rental
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentalCreate'
       responses:
-        '200':
+        '201':
+            /api/v1/mysql/rentals/reservations:
+              post:
+                tags:
+                - MySQL
+                summary: Create rental reservation
+                requestBody:
+                  required: true
+                  content:
+                    application/json:
+                      schema:
+                        $ref: '#/components/schemas/RentalCreate'
+                responses:
+                  '201':
           description: OK
   /api/v1/mongodb/customers:
     get:
@@ -1339,6 +1356,20 @@ components:
           type: string
           format: email
         phone_number:
+        RentalCreate:
+          type: object
+          required:
+            - customer_id
+            - inventory_item_id
+            - rental_date
+          properties:
+            customer_id:
+              type: integer
+            inventory_item_id:
+              type: integer
+            rental_date:
+              type: string
+              format: date-time
           type: string
         address:
           type: string
