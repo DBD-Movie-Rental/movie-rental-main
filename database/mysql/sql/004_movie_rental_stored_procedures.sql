@@ -86,9 +86,9 @@ END$$
 DELIMITER ;
 
 
--- --------------------------------
--- 
--- --------------------------------
+-- -------------------------------------
+-- Store procedure for creating a rental
+-- -------------------------------------
 
 DELIMITER $$
 
@@ -158,6 +158,78 @@ BEGIN
     COMMIT;
 
     SELECT v_rental_id AS new_rental_id;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------
+-- Store procedure for making a rental reservation
+-- -----------------------------------------------
+DELIMITER $$
+
+CREATE PROCEDURE create_reservation (
+    IN p_customer_id     INT,
+    IN p_employee_id     INT,
+    IN p_promo_code_id   INT,
+    IN p_inventory_items JSON
+)
+BEGIN
+    DECLARE v_rental_id     INT;
+    DECLARE v_now           DATETIME;
+    DECLARE v_all_available BOOLEAN;
+
+    -- Any SQL error (including SIGNAL) will rollback the transaction
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    -- 1) Availability check (reuse existing logic)
+    CALL verify_inventory_items_available(p_inventory_items, v_all_available);
+
+    IF v_all_available = FALSE THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'One or more inventory items are not available for reservation.';
+    END IF;
+
+    -- 2) Transaction for writes
+    START TRANSACTION;
+
+    SET v_now = NOW();
+
+    INSERT INTO rental (
+        reserved_at_datetime,
+        status,
+        customer_id,
+        employee_id,
+        promo_code_id
+    )
+    VALUES (
+        v_now,
+        'RESERVED',
+        p_customer_id,
+        p_employee_id,
+        p_promo_code_id
+    );
+
+    SET v_rental_id = LAST_INSERT_ID();
+
+    INSERT INTO rental_item (rental_id, inventory_item_id)
+    SELECT v_rental_id, item_id
+    FROM JSON_TABLE(p_inventory_items, '$[*]' COLUMNS(item_id INT PATH '$')) j;
+
+    -- Mark inventory items as not available (same semantics as rental)
+    UPDATE inventory_item
+    SET status = 0
+    WHERE inventory_item_id IN (
+        SELECT item_id
+        FROM JSON_TABLE(p_inventory_items, '$[*]' COLUMNS(item_id INT PATH '$')) j
+    );
+
+    COMMIT;
+
+    SELECT v_rental_id AS new_reservation_id;
 END$$
 
 DELIMITER ;
