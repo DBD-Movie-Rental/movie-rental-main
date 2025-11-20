@@ -231,7 +231,7 @@ CREATE TABLE rental (
   CONSTRAINT fk_rental_employee
     FOREIGN KEY (employee_id)
     REFERENCES employee (employee_id)
-    ON DELETE SET NULL
+    ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT fk_rental_promo_code
     FOREIGN KEY (promo_code_id)
