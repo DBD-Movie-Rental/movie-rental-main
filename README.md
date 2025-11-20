@@ -122,6 +122,25 @@ MySQL: `127.0.0.1:3307`
 
 Swagger UI: `http://127.0.0.1:5004/api/v1/docs`
 
+## Seeding the MySQL Database
+
+If you want **more realistic demo data** (dozens of customers, movies, rentals, reviews, etc.), you can run the Python seeder.
+
+The seeder:
+
+- Uses the same **SQLAlchemy engine** as the API.
+- Reads CSV/TXT files from `seed/data/`:
+  - `customers.csv`
+  - `employees.csv`
+  - `locations.csv`
+  - `movies.csv`
+  - `promo_codes.csv`
+  - `reviews.txt`
+  
+Make sure Docker stack is running
+```bash
+python -m seed.mysql_seed
+```
 
 ## Docker build only
 
