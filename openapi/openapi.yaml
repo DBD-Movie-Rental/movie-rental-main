@@ -46,6 +46,77 @@ paths:
         '200':
           description: OK
 
+  #########################
+  # Auth Endpoints        #
+  #########################
+  /auth/register:
+    post:
+      tags: [MySQL]
+      summary: Register API user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string }
+                password: { type: string }
+                role:
+                  type: string
+                  enum: [ADMIN, SUPERUSER, USER]
+      responses:
+        '201': { description: User created }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { description: Conflict (username exists) }
+
+  /auth/login:
+    post:
+      tags: [MySQL]
+      summary: Login API user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Tokens issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token: { type: string }
+                  refresh_token: { type: string }
+        '401': { description: Invalid credentials }
+
+  /auth/refresh:
+    post:
+      tags: [MySQL]
+      summary: Refresh access token
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: New access token }
+        '401': { description: Invalid / expired token }
+
+  /auth/logout:
+    post:
+      tags: [MySQL]
+      summary: Logout (revoke token)
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Logged out }
+        '401': { description: Invalid / expired token }
+
   ####################
   # MySQL Endpoints  #
   ####################
@@ -66,6 +137,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create customer (uses stored procedure)
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -106,6 +179,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update customer
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -130,6 +205,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete customer
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -158,6 +235,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create genre
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -196,6 +275,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update genre
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -220,6 +301,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete genre
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1838,3 +1921,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Rental'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

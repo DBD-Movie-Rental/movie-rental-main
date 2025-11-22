@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 def make_crud_blueprint(resource_name: str, repo, id_converter: str = "int") -> Blueprint:
@@ -30,6 +31,7 @@ def make_crud_blueprint(resource_name: str, repo, id_converter: str = "int") -> 
             return jsonify({"error": str(e)}), 500
 
     @bp.post(f"/{resource_name}")
+    @jwt_required()
     def create_resource():
         try:
             data = request.get_json() or {}
@@ -41,6 +43,7 @@ def make_crud_blueprint(resource_name: str, repo, id_converter: str = "int") -> 
             return jsonify({"error": str(e)}), 500
 
     @bp.put(f"/{resource_name}/<{id_converter}:item_id>")
+    @jwt_required()
     def update_resource(item_id):  # type: ignore[no-redef]
         try:
             data = request.get_json() or {}
@@ -54,6 +57,7 @@ def make_crud_blueprint(resource_name: str, repo, id_converter: str = "int") -> 
             return jsonify({"error": str(e)}), 500
 
     @bp.delete(f"/{resource_name}/<{id_converter}:item_id>")
+    @jwt_required()
     def delete_resource(item_id):  # type: ignore[no-redef]
         try:
             ok = repo.delete(item_id)
