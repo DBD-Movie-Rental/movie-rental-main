@@ -612,6 +612,81 @@ def seed_reviews(max_reviews_per_movie: int = 3) -> None:
         session.close()
 
 
+# --- Payment seeding ---
+def seed_payments() -> None:
+    """Seed payments from payments.csv."""
+    try:
+        rows = load_csv("payments.csv")
+    except FileNotFoundError:
+        print("[seed] payments.csv not found, skipping payments.")
+        return
+
+    if not rows:
+        print("[seed] payments.csv is empty, skipping payments.")
+        return
+
+    session = get_session()
+    try:
+        for row in rows:
+            session.execute(
+                text(
+                    """
+                    INSERT INTO payment (amount_dkk, created_at, rental_id)
+                    VALUES (:amount_dkk, :created_at, :rental_id)
+                    ON DUPLICATE KEY UPDATE
+                        amount_dkk = VALUES(amount_dkk),
+                        created_at = VALUES(created_at),
+                        rental_id = VALUES(rental_id)
+                    """
+                ),
+                {
+                    "amount_dkk": row["amount_dkk"],
+                    "created_at": row["created_at"],
+                    "rental_id": row["rental_id"],
+                },
+            )
+        session.commit()
+        print(f"[seed] Seeded {len(rows)} payments.")
+    finally:
+        session.close()
+
+# --- Rental Fee seeding ---
+def seed_rental_fees() -> None:
+    """Seed rental fees from rental_fees.csv."""
+    try:
+        rows = load_csv("rental_fees.csv")
+    except FileNotFoundError:
+        print("[seed] rental_fees.csv not found, skipping rental fees.")
+        return
+
+    if not rows:
+        print("[seed] rental_fees.csv is empty, skipping rental fees.")
+        return
+
+    session = get_session()
+    try:
+        for row in rows:
+            session.execute(
+                text(
+                    """
+                    INSERT INTO rental_fee (fee_id, rental_id)
+                    VALUES (:fee_id, :rental_id)
+                    ON DUPLICATE KEY UPDATE
+                        fee_id = VALUES(fee_id),
+                        rental_id = VALUES(rental_id)
+                    """
+                ),
+                {
+                    "fee_id": row["fee_id"],
+                    "rental_id": row["rental_id"],
+                },
+            )
+        session.commit()
+        print(f"[seed] Seeded {len(rows)} rental fees.")
+    finally:
+        session.close()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Main entrypoint
 # ─────────────────────────────────────────────────────────────────────────────
@@ -631,6 +706,8 @@ def main() -> None:
     print(f'80% done with seeding.')
     seed_rentals_and_reservations()
     seed_reviews()
+    seed_payments()
+    seed_rental_fees()
     print("[seed] MySQL seeding complete.")
 
 
