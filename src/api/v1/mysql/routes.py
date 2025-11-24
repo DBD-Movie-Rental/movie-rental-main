@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+
 from src.repositories.mysql.customer_repository import CustomerRepository
 from src.repositories.mysql.genre_repository import GenreRepository
 from src.repositories.mysql.movie_repository import MovieRepository
@@ -14,6 +15,9 @@ from src.repositories.mysql.promo_code_repository import PromoCodeRepository
 from src.repositories.mysql.rental_repository import RentalRepository
 from src.repositories.mysql.payment_repository import PaymentRepository
 from src.repositories.mysql.review_repository import ReviewRepository
+from src.repositories.mysql.rental_status_audit_repository import RentalStatusAuditRepository
+from src.repositories.mysql.payment_audit_repository import PaymentAuditRepository
+
 from .crud_blueprint import make_crud_blueprint
 
 # Blueprint for MySQL routes
@@ -35,6 +39,8 @@ promo_code_repo = PromoCodeRepository()
 rental_repo = RentalRepository()
 payment_repo = PaymentRepository()
 review_repo = ReviewRepository()
+audit_rental_repo = RentalStatusAuditRepository()
+audit_payment_repo = PaymentAuditRepository()
 
 # Register generic CRUD routes for customers using the CustomerRepository
 customers_bp = make_crud_blueprint("customers", repo, id_converter="int")
@@ -108,3 +114,19 @@ bp.register_blueprint(payments_bp)
 # Register generic CRUD routes for reviews
 reviews_bp = make_crud_blueprint("reviews", review_repo, id_converter="int")
 bp.register_blueprint(reviews_bp)
+
+# ---------------------------
+# Audit endpoints (read-only)
+# ---------------------------
+@bp.get("/audit/rentals")
+def list_rental_audit():
+    rental_id = request.args.get("rental_id", type=int)
+    limit = request.args.get("limit", default=100, type=int)
+    return jsonify(audit_rental_repo.list(rental_id=rental_id, limit=limit))
+
+@bp.get("/audit/payments")
+def list_payment_audit():
+    payment_id = request.args.get("payment_id", type=int)
+    rental_id = request.args.get("rental_id", type=int)
+    limit = request.args.get("limit", default=100, type=int)
+    return jsonify(audit_payment_repo.list(payment_id=payment_id, rental_id=rental_id, limit=limit))

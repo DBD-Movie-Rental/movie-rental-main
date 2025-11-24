@@ -1351,12 +1351,14 @@ paths:
     post:
       tags: [MySQL]
       summary: Create payment
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Payment'
+              $ref: '#/components/schemas/PaymentCreate'
       responses:
         '201':
           description: Payment created
@@ -1389,6 +1391,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update payment
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1400,7 +1404,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Payment'
+              $ref: '#/components/schemas/PaymentUpdate'
       responses:
         '200':
           description: Payment updated
@@ -1413,6 +1417,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete payment
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1514,6 +1520,63 @@ paths:
           description: Review deleted
         '404':
           $ref: '#/components/responses/NotFound'
+
+  /mysql/audit/rentals:
+    get:
+      tags: [MySQL]
+      summary: List rental audit entries
+      parameters:
+        - name: rental_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+      responses:
+        '200':
+          description: Rental audit entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RentalStatusAudit'
+
+  /mysql/audit/payments:
+    get:
+      tags: [MySQL]
+      summary: List payment audit entries
+      parameters:
+        - name: payment_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: rental_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+      responses:
+        '200':
+          description: Payment audit entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentAudit'
 
   #####################
   # MongoDB Endpoints #
@@ -1867,12 +1930,31 @@ components:
           type: integer
         rental_id:
           type: integer
-        amount:
+        amount_dkk:
           type: number
           format: float
-        paid_at_datetime:
+        created_at:
           type: string
           format: date-time
+
+    PaymentCreate:
+      type: object
+      required:
+        - rental_id
+        - amount_dkk
+      properties:
+        rental_id:
+          type: integer
+        amount_dkk:
+          type: number
+          format: float
+
+    PaymentUpdate:
+      type: object
+      properties:
+        amount_dkk:
+          type: number
+          format: float
 
     Review:
       type: object
@@ -1921,6 +2003,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Rental'
+    RentalStatusAudit:
+      type: object
+      properties:
+        audit_id: { type: integer }
+        rental_id: { type: integer }
+        action: { type: string, enum: [INSERT, UPDATE, DELETE] }
+        old_status: { type: string, nullable: true }
+        new_status: { type: string, nullable: true }
+        old_rented_at_datetime: { type: string, format: date-time, nullable: true }
+        new_rented_at_datetime: { type: string, format: date-time, nullable: true }
+        old_due_at_datetime: { type: string, format: date-time, nullable: true }
+        new_due_at_datetime: { type: string, format: date-time, nullable: true }
+        old_returned_at_datetime: { type: string, format: date-time, nullable: true }
+        new_returned_at_datetime: { type: string, format: date-time, nullable: true }
+        changed_by: { type: string }
+        changed_at: { type: string, format: date-time }
+    PaymentAudit:
+      type: object
+      properties:
+        audit_id: { type: integer }
+        payment_id: { type: integer, nullable: true }
+        rental_id: { type: integer, nullable: true }
+        action: { type: string, enum: [INSERT, UPDATE, DELETE, REFUND] }
+        old_amount_dkk: { type: number, format: float, nullable: true }
+        new_amount_dkk: { type: number, format: float, nullable: true }
+        changed_by: { type: string }
+        changed_at: { type: string, format: date-time }
   securitySchemes:
     bearerAuth:
       type: http
