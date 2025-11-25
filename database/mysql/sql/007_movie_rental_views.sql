@@ -30,8 +30,7 @@ SELECT
   a.address_id,
   a.address,
   a.city,
-  a.post_code,
-  a.created_at AS address_created_at
+  a.post_code
 FROM customer c
 LEFT JOIN address a ON a.customer_id = c.customer_id;
 
