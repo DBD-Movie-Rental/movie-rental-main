@@ -1,7 +1,7 @@
 USE movie_rental;
 
 -- ----------------------------------------
--- Check overdue rantals and update status
+-- Check overdue rentals and update status
 -- ----------------------------------------
 CREATE EVENT mark_overdue_rentals
 ON SCHEDULE EVERY 1 DAY
