@@ -88,7 +88,7 @@ CALL add_customer_with_address('Alice', 'Andersen', 'alice@example.com', '402233
 CALL add_customer_with_address('Bob', 'Bertelsen', 'bob@example.com', '50667788', 'River Road 5', 'Aarhus', '8000');
 CALL add_customer_with_address('Sara', 'Larsen', 'sara@example.com', '60554433', 'Østerbrogade 10', 'Copenhagen',
                                '2100');
-CALL add_customer_with_address('Mikkel', 'Madsen', 'mikkel@example.com', '71 23 45 67', 'H.C. Andersens Blvd 2',
+CALL add_customer_with_address('Mikkel', 'Madsen', 'mikkel@example.com', '71234567', 'H.C. Andersens Blvd 2',
                                'Aarhus', '8000');
 
 -- membership plans using joins (no variables)
