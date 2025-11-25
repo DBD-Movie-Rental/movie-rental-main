@@ -25,7 +25,6 @@
 docker-data/
 mysql-data/
 **/mysql-data/
-data/
 volumes/
 
 # Docker logs
