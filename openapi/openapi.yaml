@@ -331,6 +331,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create movie
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -369,6 +371,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update movie
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -393,6 +397,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete movie
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -421,6 +427,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create employee
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -459,6 +467,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update employee
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -483,6 +493,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete employee
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -511,6 +523,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create address
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -549,6 +563,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update address
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -573,6 +589,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete address
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -601,6 +619,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create fee
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -639,6 +659,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update fee
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -663,6 +685,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete fee
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -691,6 +715,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create format
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -729,6 +755,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update format
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -753,6 +781,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete format
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -781,6 +811,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create location
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -819,6 +851,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update location
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -843,6 +877,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete location
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -871,6 +907,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create inventory item
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -909,6 +947,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update inventory item
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -933,6 +973,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete inventory item
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -961,6 +1003,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create membership
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -999,6 +1043,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update membership
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1023,6 +1069,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete membership
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1051,6 +1099,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create membership plan
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1089,6 +1139,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update membership plan
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1113,6 +1165,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete membership plan
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1141,6 +1195,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create promo code
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1179,6 +1235,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update promo code
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1203,6 +1261,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete promo code
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1234,6 +1294,8 @@ paths:
       description: >
         Creates a rental using the MySQL stored procedure create_rental.
         Expects a list of inventory item IDs in the request body.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1274,6 +1336,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update rental
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1298,6 +1362,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete rental
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1317,6 +1383,8 @@ paths:
       description: >
         Creates a rental with status=RESERVED using the create_reservation
         stored procedure. Inventory availability is validated in the database.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1447,6 +1515,8 @@ paths:
     post:
       tags: [MySQL]
       summary: Create review
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1485,6 +1555,8 @@ paths:
     put:
       tags: [MySQL]
       summary: Update review
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -1509,6 +1581,8 @@ paths:
     delete:
       tags: [MySQL]
       summary: Delete review
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
