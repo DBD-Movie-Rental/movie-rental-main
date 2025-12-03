@@ -30,7 +30,23 @@ class MongoBaseRepository(Generic[DocT]):
         doc = self.model.objects(**{self.id_field: id_}).first()
         return self._to_dict(doc) if doc else None
 
+    def _get_next_id(self) -> int:
+        """
+        Helper to simulate auto-increment IDs.
+        Finds the max existing ID and adds 1.
+        """
+        last = self.model.objects.order_by(f"-{self.id_field}").first()
+        if last:
+            return getattr(last, self.id_field) + 1
+        return 1
+
     def create(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        # If ID is missing and looks like we need an int ID, generate it
+        if self.id_field not in data:
+             # Check if the model's id field is an IntField
+             # (This is a bit hacky, assuming we want auto-increment for all)
+             data[self.id_field] = self._get_next_id()
+
         doc = self.model(**data)
         doc.save()
         return self._to_dict(doc)

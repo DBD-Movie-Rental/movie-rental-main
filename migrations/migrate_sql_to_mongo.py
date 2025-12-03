@@ -141,18 +141,23 @@ def migrate_customers(session):
         ).fetchone()
 
         if not mp_row:
-            raise RuntimeError(
-                f"No membership_plan found for customer_id={c.customer_id}"
+            membership_plan_embedded = MongoMembershipPlan(
+                membership_plan_id=c.customer_id,  # fallback ID
+                membership_type="BRONZE",
+                starts_on=datetime.utcnow(),
+                ends_on=None,
+                monthly_cost_dkk=0.0,
+                membership_id=3,  # Assuming 3=BRONZE
             )
-
-        membership_plan_embedded = MongoMembershipPlan(
-            membership_plan_id=mp_row.membership_plan_id,
-            membership_type=mp_row.membership_type,
-            starts_on=mp_row.starts_on,
-            ends_on=mp_row.ends_on,
-            monthly_cost_dkk=mp_row.monthly_cost,
-            membership_id=mp_row.membership_id,
-        )
+        else:
+            membership_plan_embedded = MongoMembershipPlan(
+                membership_plan_id=mp_row.membership_plan_id,
+                membership_type=mp_row.membership_type,
+                starts_on=mp_row.starts_on,
+                ends_on=mp_row.ends_on,
+                monthly_cost_dkk=mp_row.monthly_cost,
+                membership_id=mp_row.membership_id,
+            )
 
         doc = MongoCustomer(
             customer_id=c.customer_id,

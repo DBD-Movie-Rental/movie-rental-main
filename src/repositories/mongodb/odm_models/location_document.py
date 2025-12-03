@@ -17,12 +17,30 @@ class EmployeeEmbedded(EmbeddedDocument):
     email = StringField(required=True, db_field="email")
     is_active = BooleanField(required=True, db_field="isActive")
 
+    def to_dict(self) -> dict:
+        return {
+            "id": self.employee_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "phone_number": self.phone_number,
+            "email": self.email,
+            "is_active": self.is_active,
+        }
+
 
 class InventoryItemEmbedded(EmbeddedDocument):
     inventory_item_id = IntField(required=True, db_field="inventoryItemId")
     movie_id = IntField(required=True, db_field="movieId")
     format_id = IntField(required=True, db_field="formatId")
     status = StringField(required=True, db_field="status")  # AVAILABLE/RENTED/...
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.inventory_item_id,
+            "movie_id": self.movie_id,
+            "format_id": self.format_id,
+            "status": self.status,
+        }
 
 
 class Location(Document):

@@ -22,6 +22,13 @@ class PaymentEmbedded(EmbeddedDocument):
     amount_dkk = DecimalField(required=True, db_field="amountDkk")
     created_at = DateTimeField(required=True, db_field="createdAt")
 
+    def to_dict(self) -> dict:
+        return {
+            "id": self.payment_id,
+            "amount_dkk": float(self.amount_dkk) if self.amount_dkk is not None else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
 
 class FeeSnapshotEmbedded(EmbeddedDocument):
     fee_type = StringField(db_field="feeType")
@@ -78,10 +85,10 @@ class Rental(Document):
             "location_id": self.location_id,
             "employee_id": self.employee_id,
             "status": self.status,
-            "rented_at": self.rented_at.isoformat() if self.rented_at else None,
-            "returned_at": self.returned_at.isoformat() if self.returned_at else None,
-            "due_at": self.due_at.isoformat() if self.due_at else None,
-            "reserved_at": self.reserved_at.isoformat() if self.reserved_at else None,
+            "rented_at_datetime": self.rented_at.isoformat() if self.rented_at else None,
+            "returned_at_datetime": self.returned_at.isoformat() if self.returned_at else None,
+            "due_at_datetime": self.due_at.isoformat() if self.due_at else None,
+            "reserved_at_datetime": self.reserved_at.isoformat() if self.reserved_at else None,
         }
     
     def to_detailed_dict(self) -> dict:

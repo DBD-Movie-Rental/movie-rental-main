@@ -16,6 +16,14 @@ class Address(EmbeddedDocument):
     city = StringField(required=True, db_field="city")
     post_code = StringField(required=True, db_field="postCode")
 
+    def to_dict(self) -> dict:
+        return {
+            "id": self.address_id,
+            "address": self.address,
+            "city": self.city,
+            "post_code": self.post_code,
+        }
+
 
 class MembershipPlan(EmbeddedDocument):
     membership_plan_id = IntField(required=True, db_field="membershipPlanId")
@@ -28,6 +36,16 @@ class MembershipPlan(EmbeddedDocument):
     ends_on = DateTimeField(db_field="endsOn")
     monthly_cost_dkk = DecimalField(required=True, db_field="monthlyCostDkk")
     membership_id = IntField(required=True, db_field="membershipId")
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.membership_plan_id,
+            "membership_type": self.membership_type,
+            "starts_on": self.starts_on.isoformat() if self.starts_on else None,
+            "ends_on": self.ends_on.isoformat() if self.ends_on else None,
+            "monthly_cost_dkk": float(self.monthly_cost_dkk) if self.monthly_cost_dkk is not None else None,
+            "membership_id": self.membership_id,
+        }
 
 
 class RecentRental(EmbeddedDocument):
