@@ -85,10 +85,10 @@ class Rental(Document):
             "location_id": self.location_id,
             "employee_id": self.employee_id,
             "status": self.status,
-            "rented_at": self.rented_at.isoformat() if self.rented_at else None,
-            "returned_at": self.returned_at.isoformat() if self.returned_at else None,
-            "due_at": self.due_at.isoformat() if self.due_at else None,
-            "reserved_at": self.reserved_at.isoformat() if self.reserved_at else None,
+            "rented_at_datetime": self.rented_at.isoformat() if self.rented_at else None,
+            "returned_at_datetime": self.returned_at.isoformat() if self.returned_at else None,
+            "due_at_datetime": self.due_at.isoformat() if self.due_at else None,
+            "reserved_at_datetime": self.reserved_at.isoformat() if self.reserved_at else None,
         }
     
     def to_detailed_dict(self) -> dict:

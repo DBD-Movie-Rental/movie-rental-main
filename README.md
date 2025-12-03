@@ -50,8 +50,8 @@ It shows how collections, embedded documents, and references represent the same 
 
 Interactive API docs are available after starting the Flask app:
 
-- Swagger UI: `http://localhost:5004/api/v1/docs`
-- Raw OpenAPI YAML: `http://localhost:5004/openapi/v1.yaml`
+- Swagger UI: `http://127.0.0.1:5004/api/v1/docs`
+- Raw OpenAPI YAML: `http://127.0.0.1:5004/openapi/v1.yaml`
 
 ---
 
@@ -139,7 +139,7 @@ The seeder:
   
 Make sure Docker stack is running
 ```bash
-python -m seed.mysql_seed
+python3 -m seed.mysql_seed
 ```
 
 ## Docker build only

@@ -2,56 +2,41 @@ openapi: 3.0.3
 info:
   title: Movie Rental API (Polyglot Backends)
   version: 1.0.0
-  description: >
-    Unified OpenAPI specification for the Movie Rental system.
-    Exposes MySQL (CRUD + stored procedures), MongoDB (read models),
-    and Neo4j (graph-related) endpoints.
+  description: 'Unified OpenAPI specification for the Movie Rental system. Exposes
+    MySQL (CRUD + stored procedures), MongoDB (read models), and Neo4j (graph-related)
+    endpoints.
 
+    '
 servers:
-  - url: /api/v1
-
+- url: /api/v1
 tags:
-  - name: MySQL
-    description: Endpoints backed by the MySQL database
-  - name: MongoDB
-    description: Read-model and reporting endpoints backed by MongoDB
-  - name: Neo4j
-    description: Graph-related endpoints backed by Neo4j
-
+- name: MySQL
+  description: Endpoints backed by the MySQL database
+- name: MongoDB
+  description: Read-model and reporting endpoints backed by MongoDB
+- name: Neo4j
+  description: Graph-related endpoints backed by Neo4j
 paths:
-  ####################
-  # Health Endpoints #
-  ####################
   /mysql/health:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: MySQL health check
       responses:
         '200':
           description: OK
-
-  /mongodb/health:
-    get:
-      tags: [MongoDB]
-      summary: MongoDB health check
-      responses:
-        '200':
-          description: OK
-
   /neo4j/health:
     get:
-      tags: [Neo4j]
+      tags:
+      - Neo4j
       summary: Neo4j health check
       responses:
         '200':
           description: OK
-
-  #########################
-  # Auth Endpoints        #
-  #########################
   /auth/register:
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Register API user
       requestBody:
         required: true
@@ -59,21 +44,31 @@ paths:
           application/json:
             schema:
               type: object
-              required: [username, password]
+              required:
+              - username
+              - password
               properties:
-                username: { type: string }
-                password: { type: string }
+                username:
+                  type: string
+                password:
+                  type: string
                 role:
                   type: string
-                  enum: [ADMIN, SUPERUSER, USER]
+                  enum:
+                  - ADMIN
+                  - SUPERUSER
+                  - USER
       responses:
-        '201': { description: User created }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '409': { description: Conflict (username exists) }
-
+        '201':
+          description: User created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Conflict (username exists)
   /auth/login:
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Login API user
       requestBody:
         required: true
@@ -81,10 +76,14 @@ paths:
           application/json:
             schema:
               type: object
-              required: [username, password]
+              required:
+              - username
+              - password
               properties:
-                username: { type: string }
-                password: { type: string }
+                username:
+                  type: string
+                password:
+                  type: string
       responses:
         '200':
           description: Tokens issued
@@ -93,37 +92,40 @@ paths:
               schema:
                 type: object
                 properties:
-                  access_token: { type: string }
-                  refresh_token: { type: string }
-        '401': { description: Invalid credentials }
-
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+        '401':
+          description: Invalid credentials
   /auth/refresh:
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Refresh access token
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
-        '200': { description: New access token }
-        '401': { description: Invalid / expired token }
-
+        '200':
+          description: New access token
+        '401':
+          description: Invalid / expired token
   /auth/logout:
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Logout (revoke token)
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       responses:
-        '200': { description: Logged out }
-        '401': { description: Invalid / expired token }
-
-  ####################
-  # MySQL Endpoints  #
-  ####################
-
+        '200':
+          description: Logged out
+        '401':
+          description: Invalid / expired token
   /mysql/customers:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List customers
       responses:
         '200':
@@ -135,10 +137,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Customer'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create customer (uses stored procedure)
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -156,17 +159,17 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
-
   /mysql/customers/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get customer by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Customer found
@@ -177,16 +180,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update customer
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -203,25 +207,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete customer
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Customer deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/genres:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List genres
       responses:
         '200':
@@ -233,10 +238,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Genre'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create genre
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -252,17 +258,17 @@ paths:
                 $ref: '#/components/schemas/Genre'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/genres/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get genre by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Genre found
@@ -273,16 +279,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update genre
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -299,25 +306,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete genre
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Genre deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/movies:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List movies
       responses:
         '200':
@@ -329,10 +337,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Movie'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create movie
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -348,17 +357,17 @@ paths:
                 $ref: '#/components/schemas/Movie'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/movies/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get movie by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Movie found
@@ -369,16 +378,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update movie
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -395,25 +405,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete movie
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Movie deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/employees:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List employees
       responses:
         '200':
@@ -425,10 +436,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Employee'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create employee
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -444,17 +456,17 @@ paths:
                 $ref: '#/components/schemas/Employee'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/employees/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get employee by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Employee found
@@ -465,16 +477,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update employee
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -491,25 +504,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete employee
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Employee deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/addresses:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List addresses
       responses:
         '200':
@@ -521,10 +535,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Address'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create address
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -540,17 +555,17 @@ paths:
                 $ref: '#/components/schemas/Address'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/addresses/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get address by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Address found
@@ -561,16 +576,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update address
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -587,25 +603,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete address
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Address deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/fees:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List fees
       responses:
         '200':
@@ -617,10 +634,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Fee'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create fee
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -636,17 +654,17 @@ paths:
                 $ref: '#/components/schemas/Fee'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/fees/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get fee by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Fee found
@@ -657,16 +675,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update fee
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -683,25 +702,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete fee
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Fee deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/formats:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List formats
       responses:
         '200':
@@ -713,10 +733,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Format'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create format
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -732,17 +753,17 @@ paths:
                 $ref: '#/components/schemas/Format'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/formats/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get format by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Format found
@@ -753,16 +774,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update format
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -779,25 +801,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete format
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Format deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/locations:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List locations
       responses:
         '200':
@@ -809,10 +832,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Location'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create location
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -828,17 +852,17 @@ paths:
                 $ref: '#/components/schemas/Location'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/locations/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get location by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Location found
@@ -849,16 +873,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update location
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -875,25 +900,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete location
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Location deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/inventory_items:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List inventory items
       responses:
         '200':
@@ -905,10 +931,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/InventoryItem'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create inventory item
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -924,17 +951,17 @@ paths:
                 $ref: '#/components/schemas/InventoryItem'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/inventory_items/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get inventory item by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Inventory item found
@@ -945,16 +972,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update inventory item
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -971,25 +999,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete inventory item
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Inventory item deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/memberships:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List memberships
       responses:
         '200':
@@ -1001,10 +1030,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Membership'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create membership
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1020,17 +1050,17 @@ paths:
                 $ref: '#/components/schemas/Membership'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/memberships/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get membership by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Membership found
@@ -1041,16 +1071,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update membership
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -1067,25 +1098,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete membership
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Membership deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/membership_plans:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List membership plans
       responses:
         '200':
@@ -1097,10 +1129,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/MembershipPlan'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create membership plan
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1116,17 +1149,17 @@ paths:
                 $ref: '#/components/schemas/MembershipPlan'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/membership_plans/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get membership plan by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Membership plan found
@@ -1137,16 +1170,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update membership plan
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -1163,25 +1197,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete membership plan
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Membership plan deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/promo_codes:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List promo codes
       responses:
         '200':
@@ -1193,10 +1228,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/PromoCode'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create promo code
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1212,17 +1248,17 @@ paths:
                 $ref: '#/components/schemas/PromoCode'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/promo_codes/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get promo code by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Promo code found
@@ -1233,16 +1269,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update promo code
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -1259,25 +1296,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete promo code
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Promo code deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/rentals:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List rentals
       responses:
         '200':
@@ -1289,13 +1327,15 @@ paths:
                 items:
                   $ref: '#/components/schemas/Rental'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create rental (uses stored procedure)
-      description: >
-        Creates a rental using the MySQL stored procedure create_rental.
+      description: 'Creates a rental using the MySQL stored procedure create_rental.
         Expects a list of inventory item IDs in the request body.
+
+        '
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1313,17 +1353,17 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
-
   /mysql/rentals/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get rental by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Rental found
@@ -1334,16 +1374,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update rental
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -1360,31 +1401,33 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete rental
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Rental deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/rentals/reservations:
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create rental reservation (uses stored procedure)
-      description: >
-        Creates a rental with status=RESERVED using the create_reservation
+      description: 'Creates a rental with status=RESERVED using the create_reservation
         stored procedure. Inventory availability is validated in the database.
+
+        '
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1402,10 +1445,10 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '500':
           $ref: '#/components/responses/ServerError'
-
   /mysql/payments:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List payments
       responses:
         '200':
@@ -1417,10 +1460,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Payment'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create payment
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1436,17 +1480,17 @@ paths:
                 $ref: '#/components/schemas/Payment'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/payments/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get payment by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Payment found
@@ -1457,16 +1501,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update payment
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -1483,25 +1528,26 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete payment
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Payment deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/reviews:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List reviews
       responses:
         '200':
@@ -1513,10 +1559,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/Review'
     post:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Create review
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -1532,17 +1579,17 @@ paths:
                 $ref: '#/components/schemas/Review'
         '400':
           $ref: '#/components/responses/BadRequest'
-
   /mysql/reviews/{id}:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Get review by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Review found
@@ -1553,16 +1600,17 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Update review
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -1579,38 +1627,39 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: Delete review
       security:
-        - bearerAuth: []
+      - bearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '204':
           description: Review deleted
         '404':
           $ref: '#/components/responses/NotFound'
-
   /mysql/audit/rentals:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List rental audit entries
       parameters:
-        - name: rental_id
-          in: query
-          required: false
-          schema:
-            type: integer
-        - name: limit
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 100
+      - name: rental_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
       responses:
         '200':
           description: Rental audit entries
@@ -1620,28 +1669,28 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RentalStatusAudit'
-
   /mysql/audit/payments:
     get:
-      tags: [MySQL]
+      tags:
+      - MySQL
       summary: List payment audit entries
       parameters:
-        - name: payment_id
-          in: query
-          required: false
-          schema:
-            type: integer
-        - name: rental_id
-          in: query
-          required: false
-          schema:
-            type: integer
-        - name: limit
-          in: query
-          required: false
-          schema:
-            type: integer
-            default: 100
+      - name: payment_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: rental_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
       responses:
         '200':
           description: Payment audit entries
@@ -1651,98 +1700,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PaymentAudit'
-
-  #####################
-  # MongoDB Endpoints #
-  #####################
-
-  /mongodb/customers:
-    get:
-      tags: [MongoDB]
-      summary: List MongoDB customers (flat)
-      responses:
-        '200':
-          description: List of customers (denormalized)
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Customer'
-
-  /mongodb/customers/detailed:
-    get:
-      tags: [MongoDB]
-      summary: List detailed customers
-      description: >
-        Returns customers with embedded membership, rentals and related data
-        from MongoDB read models.
-      responses:
-        '200':
-          description: List of detailed customers
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MongoCustomerDetailed'
-
-  /mongodb/rentals:
-    get:
-      tags: [MongoDB]
-      summary: List MongoDB rentals (flat)
-      responses:
-        '200':
-          description: List of rentals stored in MongoDB
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Rental'
-
-  /mongodb/rentals/detailed:
-    get:
-      tags: [MongoDB]
-      summary: List detailed rentals
-      description: >
-        Returns rentals with embedded items, customer, payments and fees
-        from MongoDB read models.
-      responses:
-        '200':
-          description: List of detailed rentals
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MongoRentalDetailed'
-
-  /mongodb/movies:
-    get:
-      tags: [MongoDB]
-      summary: List MongoDB movies
-      responses:
-        '200':
-          description: List of movies from MongoDB
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Movie'
-
-  ####################
-  # Neo4j Endpoints  #
-  ####################
-
   /neo4j/movies/popular:
     get:
-      tags: [Neo4j]
+      tags:
+      - Neo4j
       summary: Get popular movies from Neo4j
-      description: >
-        Returns movies ranked by relationships and metrics stored in Neo4j
+      description: 'Returns movies ranked by relationships and metrics stored in Neo4j
         (for example, most co-rented, highly connected, etc.).
+
+        '
       responses:
         '200':
           description: List of popular movies
@@ -1752,8 +1718,1573 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Movie'
+  /mongodb/health:
+    get:
+      tags:
+      - MongoDB
+      summary: MongoDB health
+      responses:
+        '200':
+          description: OK
+  /mongodb/customers:
+    get:
+      tags:
+      - MongoDB
+      summary: List customers (flat, MySQL-like shape)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create customer
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreate'
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/customers/detailed:
+    get:
+      tags:
+      - MongoDB
+      summary: List customers with embedded address + membership + recent rentals
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoCustomerDetailed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/customers/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get customer by id (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update customer
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete customer
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Customer deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/customers/{id}/details:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get customer by id (with embedded details)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoCustomerDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/genres:
+    get:
+      tags:
+      - MongoDB
+      summary: List MongoDB genres (lookup)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Genre'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create genre
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genre'
+      responses:
+        '201':
+          description: Genre created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /mongodb/genres/{id}:
+    put:
+      tags:
+      - MongoDB
+      summary: Update genre
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genre'
+      responses:
+        '200':
+          description: Genre updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete genre
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Genre deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+      - MongoDB
+      summary: Get genre by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Genre found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Genre'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/movies:
+    get:
+      tags:
+      - MongoDB
+      summary: List movies (flat, MySQL-like shape)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create movie
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        '201':
+          description: Movie created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /mongodb/movies/detailed:
+    get:
+      tags:
+      - MongoDB
+      summary: List movies with embedded reviews + genres array
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoMovieDetailed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/movies/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get movie by id (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update movie
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        '200':
+          description: Movie updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete movie
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Movie deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/movies/{id}/details:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get movie by id (with embedded details)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoMovieDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/employees:
+    get:
+      tags:
+      - MongoDB
+      summary: List employees (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/employees/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get employee by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete employee
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/addresses:
+    get:
+      tags:
+      - MongoDB
+      summary: List addresses
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/addresses/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get address by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update address
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete address
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/fees:
+    post:
+      tags:
+      - MongoDB
+      summary: Create fee
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Fee'
+      responses:
+        '201':
+          description: Fee created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fee'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      tags:
+      - MongoDB
+      summary: List fees
+      responses:
+        '200':
+          description: List of fees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Fee'
+  /mongodb/fees/{id}:
+    put:
+      tags:
+      - MongoDB
+      summary: Update fee
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Fee'
+      responses:
+        '200':
+          description: Fee updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fee'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete fee
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Fee deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+      - MongoDB
+      summary: Get fee by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fee found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fee'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/formats:
+    get:
+      tags:
+      - MongoDB
+      summary: List MongoDB formats (lookup)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Format'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create format
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Format'
+      responses:
+        '201':
+          description: Format created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Format'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /mongodb/formats/{id}:
+    put:
+      tags:
+      - MongoDB
+      summary: Update format
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Format updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Format'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete format
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Format deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+      - MongoDB
+      summary: Get format by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Format found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Format'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/locations:
+    get:
+      tags:
+      - MongoDB
+      summary: List locations (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create location
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '201':
+          description: Location created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /mongodb/locations/detailed:
+    get:
+      tags:
+      - MongoDB
+      summary: List locations with embedded employees + inventory items
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoLocationDetailed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/locations/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get location by id (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update location
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: Location updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete location
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Location deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/locations/{id}/details:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get location by id (with embedded employees + inventory)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoLocationDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/inventory_items:
+    get:
+      tags:
+      - MongoDB
+      summary: List inventory items
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventoryItem'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create inventory item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/inventory_items/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get inventory item by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update inventory item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete inventory item
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/memberships:
+    post:
+      tags:
+      - MongoDB
+      summary: Create membership
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Membership'
+      responses:
+        '201':
+          description: Membership created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      tags:
+      - MongoDB
+      summary: List memberships
+      responses:
+        '200':
+          description: List of memberships
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Membership'
+  /mongodb/memberships/{id}:
+    put:
+      tags:
+      - MongoDB
+      summary: Update membership
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Membership'
+      responses:
+        '200':
+          description: Membership updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete membership
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Membership deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+      - MongoDB
+      summary: Get membership by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Membership found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/membership_plans:
+    get:
+      tags:
+      - MongoDB
+      summary: List membership plans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MembershipPlan'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create membership plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembershipPlan'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MembershipPlan'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/membership_plans/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get membership plan by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MembershipPlan'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update membership plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MembershipPlan'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MembershipPlan'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete membership plan
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/promo_codes:
+    get:
+      tags:
+      - MongoDB
+      summary: List MongoDB promo codes (lookup)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoPromoCode'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create promo code
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoCode'
+      responses:
+        '201':
+          description: Promo code created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromoCode'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /mongodb/promo_codes/{id}:
+    put:
+      tags:
+      - MongoDB
+      summary: Update promo code
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PromoCode'
+      responses:
+        '200':
+          description: Promo code updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromoCode'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete promo code
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Promo code deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+      - MongoDB
+      summary: Get promo code by ID
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Promo code found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PromoCode'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/rentals:
+    get:
+      tags:
+      - MongoDB
+      summary: List rentals (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rental'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create rental
+      description: 'Creates a rental using the MongoDB stored procedure create_rental.
+        Expects a list of inventory item IDs in the request body.
 
+        '
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentalCreate'
+      responses:
+        '201':
+          description: Rental created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rental'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/rentals/detailed:
+    get:
+      tags:
+      - MongoDB
+      summary: List rentals with items, payments, fees and promo snapshot
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MongoRentalDetailed'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/rentals/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get rental by id (flat)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rental'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update rental
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rental'
+      responses:
+        '200':
+          description: Rental updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rental'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete rental
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Rental deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /mongodb/rentals/{id}/details:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get rental by id (with embedded details)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoRentalDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/payments:
+    get:
+      tags:
+      - MongoDB
+      summary: List payments
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/payments/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get payment by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete payment
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/reviews:
+    get:
+      tags:
+      - MongoDB
+      summary: List reviews
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      tags:
+      - MongoDB
+      summary: Create review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /mongodb/reviews/{id}:
+    parameters:
+    - $ref: '#/components/parameters/IdParam'
+    get:
+      tags:
+      - MongoDB
+      summary: Get review by id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      tags:
+      - MongoDB
+      summary: Update review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      tags:
+      - MongoDB
+      summary: Delete review
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
   responses:
     BadRequest:
       description: Bad request
@@ -1761,7 +3292,6 @@ components:
       description: Resource not found
     ServerError:
       description: Internal server error
-
   schemas:
     Address:
       type: object
@@ -1776,7 +3306,6 @@ components:
           type: string
         customer_id:
           type: integer
-
     Customer:
       type: object
       properties:
@@ -1793,17 +3322,16 @@ components:
         created_at:
           type: string
           format: date-time
-
     CustomerCreate:
       type: object
       required:
-        - first_name
-        - last_name
-        - email
-        - phone_number
-        - address
-        - city
-        - post_code
+      - first_name
+      - last_name
+      - email
+      - phone_number
+      - address
+      - city
+      - post_code
       properties:
         first_name:
           type: string
@@ -1811,6 +3339,7 @@ components:
           type: string
         email:
           type: string
+          format: email
         phone_number:
           type: string
         address:
@@ -1819,7 +3348,6 @@ components:
           type: string
         post_code:
           type: string
-
     Genre:
       type: object
       properties:
@@ -1827,7 +3355,6 @@ components:
           type: integer
         name:
           type: string
-
     Movie:
       type: object
       properties:
@@ -1846,7 +3373,6 @@ components:
         summary:
           type: string
           nullable: true
-
     Employee:
       type: object
       properties:
@@ -1862,7 +3388,6 @@ components:
           type: string
         is_active:
           type: boolean
-
     Fee:
       type: object
       properties:
@@ -1870,11 +3395,13 @@ components:
           type: integer
         fee_type:
           type: string
-          enum: [LATE, DAMAGED, OTHER]
+          enum:
+          - LATE
+          - DAMAGED
+          - OTHER
         amount_dkk:
           type: number
           format: float
-
     Format:
       type: object
       properties:
@@ -1882,8 +3409,10 @@ components:
           type: integer
         format:
           type: string
-          enum: [DVD, BLU-RAY, VHS]
-
+          enum:
+          - DVD
+          - BLU-RAY
+          - VHS
     Location:
       type: object
       properties:
@@ -1893,7 +3422,6 @@ components:
           type: string
         city:
           type: string
-
     InventoryItem:
       type: object
       properties:
@@ -1908,7 +3436,6 @@ components:
         status:
           type: integer
           description: 1 = available, 0 = unavailable
-
     Membership:
       type: object
       properties:
@@ -1916,8 +3443,10 @@ components:
           type: integer
         membership:
           type: string
-          enum: [GOLD, SILVER, BRONZE]
-
+          enum:
+          - GOLD
+          - SILVER
+          - BRONZE
     MembershipPlan:
       type: object
       properties:
@@ -1936,7 +3465,6 @@ components:
           type: integer
         customer_id:
           type: integer
-
     PromoCode:
       type: object
       properties:
@@ -1958,7 +3486,6 @@ components:
         ends_at:
           type: string
           format: date-time
-
     Rental:
       type: object
       properties:
@@ -1982,7 +3509,12 @@ components:
           nullable: true
         status:
           type: string
-          enum: [RESERVED, OPEN, RETURNED, LATE, CANCELLED]
+          enum:
+          - RESERVED
+          - OPEN
+          - RETURNED
+          - LATE
+          - CANCELLED
         customer_id:
           type: integer
         employee_id:
@@ -1991,12 +3523,11 @@ components:
         promo_code_id:
           type: integer
           nullable: true
-
     RentalCreate:
       type: object
       required:
-        - customer_id
-        - inventory_item_ids
+      - customer_id
+      - inventory_item_ids
       properties:
         customer_id:
           type: integer
@@ -2014,7 +3545,6 @@ components:
           description: List of inventory_item IDs included in this rental/reservation.
           items:
             type: integer
-
     Payment:
       type: object
       properties:
@@ -2028,26 +3558,23 @@ components:
         created_at:
           type: string
           format: date-time
-
     PaymentCreate:
       type: object
       required:
-        - rental_id
-        - amount_dkk
+      - rental_id
+      - amount_dkk
       properties:
         rental_id:
           type: integer
         amount_dkk:
           type: number
           format: float
-
     PaymentUpdate:
       type: object
       properties:
         amount_dkk:
           type: number
           format: float
-
     Review:
       type: object
       properties:
@@ -2063,67 +3590,400 @@ components:
           format: date-time
         movie_id:
           type: integer
-
     MongoRentalDetailed:
-      type: object
-      description: Detailed rental projection stored in MongoDB.
-      properties:
-        rental:
-          $ref: '#/components/schemas/Rental'
-        customer:
-          $ref: '#/components/schemas/Customer'
-        items:
-          type: array
+      allOf:
+      - $ref: '#/components/schemas/Rental'
+      - type: object
+        properties:
+          location_id:
+            type: integer
           items:
-            $ref: '#/components/schemas/InventoryItem'
-        payments:
-          type: array
-          items:
-            $ref: '#/components/schemas/Payment'
-        fees:
-          type: array
-          items:
-            $ref: '#/components/schemas/Fee'
-
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoRentalItem'
+          payments:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoRentalPayment'
+          fees:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoRentalFee'
+          promo:
+            $ref: '#/components/schemas/MongoRentalPromoSnapshot'
     MongoCustomerDetailed:
-      type: object
-      description: Detailed customer projection stored in MongoDB.
-      properties:
-        customer:
-          $ref: '#/components/schemas/Customer'
-        membership:
-          $ref: '#/components/schemas/Membership'
-        rentals:
-          type: array
-          items:
-            $ref: '#/components/schemas/Rental'
+      allOf:
+      - $ref: '#/components/schemas/Customer'
+      - type: object
+        properties:
+          address:
+            $ref: '#/components/schemas/MongoCustomerAddress'
+          membership_plan:
+            $ref: '#/components/schemas/MongoCustomerMembershipPlan'
+          recent_rentals:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoCustomerRecentRental'
     RentalStatusAudit:
       type: object
       properties:
-        audit_id: { type: integer }
-        rental_id: { type: integer }
-        action: { type: string, enum: [INSERT, UPDATE, DELETE] }
-        old_status: { type: string, nullable: true }
-        new_status: { type: string, nullable: true }
-        old_rented_at_datetime: { type: string, format: date-time, nullable: true }
-        new_rented_at_datetime: { type: string, format: date-time, nullable: true }
-        old_due_at_datetime: { type: string, format: date-time, nullable: true }
-        new_due_at_datetime: { type: string, format: date-time, nullable: true }
-        old_returned_at_datetime: { type: string, format: date-time, nullable: true }
-        new_returned_at_datetime: { type: string, format: date-time, nullable: true }
-        changed_by: { type: string }
-        changed_at: { type: string, format: date-time }
+        audit_id:
+          type: integer
+        rental_id:
+          type: integer
+        action:
+          type: string
+          enum:
+          - INSERT
+          - UPDATE
+          - DELETE
+        old_status:
+          type: string
+          nullable: true
+        new_status:
+          type: string
+          nullable: true
+        old_rented_at_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        new_rented_at_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        old_due_at_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        new_due_at_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        old_returned_at_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        new_returned_at_datetime:
+          type: string
+          format: date-time
+          nullable: true
+        changed_by:
+          type: string
+        changed_at:
+          type: string
+          format: date-time
     PaymentAudit:
       type: object
       properties:
-        audit_id: { type: integer }
-        payment_id: { type: integer, nullable: true }
-        rental_id: { type: integer, nullable: true }
-        action: { type: string, enum: [INSERT, UPDATE, DELETE, REFUND] }
-        old_amount_dkk: { type: number, format: float, nullable: true }
-        new_amount_dkk: { type: number, format: float, nullable: true }
-        changed_by: { type: string }
-        changed_at: { type: string, format: date-time }
+        audit_id:
+          type: integer
+        payment_id:
+          type: integer
+          nullable: true
+        rental_id:
+          type: integer
+          nullable: true
+        action:
+          type: string
+          enum:
+          - INSERT
+          - UPDATE
+          - DELETE
+          - REFUND
+        old_amount_dkk:
+          type: number
+          format: float
+          nullable: true
+        new_amount_dkk:
+          type: number
+          format: float
+          nullable: true
+        changed_by:
+          type: string
+        changed_at:
+          type: string
+          format: date-time
+    GenreCreate:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+    MovieCreate:
+      type: object
+      required:
+      - title
+      - release_year
+      - runtime_min
+      properties:
+        title:
+          type: string
+        release_year:
+          type: integer
+        runtime_min:
+          type: integer
+        rating:
+          type: number
+          format: float
+        summary:
+          type: string
+    EmployeeCreate:
+      type: object
+      required:
+      - first_name
+      - last_name
+      - phone_number
+      - email
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+        email:
+          type: string
+          format: email
+        is_active:
+          type: boolean
+    MongoCustomerAddress:
+      type: object
+      properties:
+        address_id:
+          type: integer
+        address:
+          type: string
+        city:
+          type: string
+        post_code:
+          type: string
+    MongoCustomerMembershipPlan:
+      type: object
+      properties:
+        membership_plan_id:
+          type: integer
+        membership_type:
+          type: string
+          enum:
+          - GOLD
+          - SILVER
+          - BRONZE
+        starts_on:
+          type: string
+          format: date-time
+        ends_on:
+          type: string
+          format: date-time
+          nullable: true
+        monthly_cost_dkk:
+          type: number
+        membership_id:
+          type: integer
+    MongoCustomerRecentRental:
+      type: object
+      properties:
+        rental_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - RESERVED
+          - OPEN
+          - RETURNED
+          - LATE
+          - CANCELLED
+        rented_at_datetime:
+          type: string
+          format: date-time
+    MongoMovieReview:
+      type: object
+      properties:
+        review_id:
+          type: integer
+        movie_id:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+        body:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        customer_id:
+          type: integer
+          nullable: true
+    MongoMovieDetailed:
+      allOf:
+      - $ref: '#/components/schemas/Movie'
+      - type: object
+        properties:
+          genres:
+            type: array
+            items:
+              type: string
+          reviews:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoMovieReview'
+    MongoLocationEmployee:
+      type: object
+      properties:
+        employee_id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          type: string
+          nullable: true
+        email:
+          type: string
+        is_active:
+          type: boolean
+    MongoLocationInventoryItem:
+      type: object
+      properties:
+        inventory_item_id:
+          type: integer
+        movie_id:
+          type: integer
+        format_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - AVAILABLE
+          - RENTED
+          - DAMAGED
+          - RETIRED
+    MongoLocationDetailed:
+      allOf:
+      - $ref: '#/components/schemas/Location'
+      - type: object
+        properties:
+          employees:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoLocationEmployee'
+          inventory:
+            type: array
+            items:
+              $ref: '#/components/schemas/MongoLocationInventoryItem'
+    MongoRentalItem:
+      type: object
+      properties:
+        rental_item_id:
+          type: integer
+        inventory_item_id:
+          type: integer
+        movie_id:
+          type: integer
+        format_id:
+          type: integer
+    MongoRentalPayment:
+      type: object
+      properties:
+        payment_id:
+          type: integer
+        amount_dkk:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+    MongoRentalFeeSnapshot:
+      type: object
+      properties:
+        fee_type:
+          type: string
+          nullable: true
+        default_amount_dkk:
+          type: number
+          nullable: true
+    MongoRentalFee:
+      type: object
+      properties:
+        rental_fee_id:
+          type: integer
+        fee_id:
+          type: integer
+        amount_dkk:
+          type: number
+        snapshot:
+          $ref: '#/components/schemas/MongoRentalFeeSnapshot'
+    MongoRentalPromoSnapshot:
+      type: object
+      properties:
+        promo_code_id:
+          type: integer
+          nullable: true
+        code:
+          type: string
+          nullable: true
+        percent_off:
+          type: number
+          nullable: true
+        amount_off_dkk:
+          type: number
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+    MongoMembershipType:
+      type: object
+      properties:
+        membership_id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - GOLD
+          - SILVER
+          - BRONZE
+    MongoFeeType:
+      type: object
+      properties:
+        fee_id:
+          type: integer
+        fee_type:
+          type: string
+          enum:
+          - LATE
+          - DAMAGED
+          - OTHER
+        default_amount_dkk:
+          type: number
+    MongoPromoCode:
+      type: object
+      properties:
+        promo_code_id:
+          type: integer
+        code:
+          type: string
+        description:
+          type: string
+          nullable: true
+        percent_off:
+          type: number
+          nullable: true
+        amount_off_dkk:
+          type: number
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
   securitySchemes:
     bearerAuth:
       type: http
