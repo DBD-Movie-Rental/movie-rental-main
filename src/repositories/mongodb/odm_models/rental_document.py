@@ -22,6 +22,13 @@ class PaymentEmbedded(EmbeddedDocument):
     amount_dkk = DecimalField(required=True, db_field="amountDkk")
     created_at = DateTimeField(required=True, db_field="createdAt")
 
+    def to_dict(self) -> dict:
+        return {
+            "id": self.payment_id,
+            "amount_dkk": float(self.amount_dkk) if self.amount_dkk is not None else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
 
 class FeeSnapshotEmbedded(EmbeddedDocument):
     fee_type = StringField(db_field="feeType")

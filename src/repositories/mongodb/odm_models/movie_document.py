@@ -18,6 +18,16 @@ class ReviewEmbedded(EmbeddedDocument):
     created_at = DateTimeField(required=True, db_field="createdAt")
     customer_id = IntField(db_field="customerId")  # optional link
 
+    def to_dict(self) -> dict:
+        return {
+            "id": self.review_id,
+            "movie_id": self.movie_id,
+            "rating": self.rating,
+            "body": self.body,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "customer_id": self.customer_id,
+        }
+
 
 class Movie(Document):
     meta = {
