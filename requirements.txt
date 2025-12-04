@@ -14,3 +14,5 @@ cryptography==43.0.1
 flask-swagger-ui==4.11.1
 flask-jwt-extended==4.6.0
 passlib==1.7.4
+neo4j==5.15.0
+neomodel==5.2.1
