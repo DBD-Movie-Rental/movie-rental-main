@@ -112,7 +112,6 @@ git clone https://github.com/DBD-Movie-Rental/movie-rental-main.git
 cd movie-rental-main
 
 # 2. Built docker compose and run
-chmod 400 database/mongodb/replica.key
 docker compose -f compose/docker-compose.dev.yml up --build -d
 
 # 3. Run mysql --> mongodb migration from api container
