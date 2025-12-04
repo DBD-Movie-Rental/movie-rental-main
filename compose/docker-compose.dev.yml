@@ -16,8 +16,7 @@ services:
       - mysql_data:/var/lib/mysql
 
   mongodb:
-    build:
-      context: ../database/mongodb
+    image: mongo:7
     container_name: mongodb_database
     restart: unless-stopped
     environment:
@@ -28,7 +27,10 @@ services:
       - "27017:27017" # MongoDB default port
     volumes:
       - ../database/mongodb:/docker-entrypoint-initdb.d:ro
+      - ../database/mongodb/init_replica.sh:/init_replica.sh:ro
       - mongodb_data:/data/db
+    entrypoint: ["bash", "/init_replica.sh"]
+    command: ["docker-entrypoint.sh", "mongod", "--replSet", "rs0", "--keyFile", "/data/replica.key", "--bind_ip_all"]
     healthcheck:
       test: test $$(echo "rs.initiate({_id:'rs0',members:[{_id:0,host:\"mongodb:27017\"}]}).ok || rs.status().ok" | mongosh -u root -p root --quiet) -eq 1
       interval: 10s
