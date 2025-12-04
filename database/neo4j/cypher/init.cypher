@@ -29,8 +29,7 @@ CREATE
 
   (e:Employee {employeeId: "", firstName: "", lastName: "", phoneNumber: "", email: "", isActive: ""}),
   (loc:Location {locationId: "", address: "", city: ""}),
-  // Optional relation: only keep if you have a source for employee-location mapping
-  // (e)-[:EMPLOYED_AT]->(loc),
+  (e)-[:EMPLOYED_AT]->(loc),
 
   (item:InventoryItem {inventoryItemId: "", status: ""})-[:LOCATED_AT]->(loc),
   (c)-[:RENTED]->(r:Rental {rentalId: "", rentedAtDatetime: "", returnedAtDatetime: "", dueAtDatetime: "", reservedAtDatetime: "", status: ""}),
