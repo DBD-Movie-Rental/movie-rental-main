@@ -82,6 +82,10 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # 4. Start MySQL + MongoDB containers (in Docker)
+# IMPORTANT: MongoDB requires a keyfile with restricted permissions for replica sets.
+# Run this command once before starting:
+chmod 400 database/mongodb/replica.key
+
 docker compose -f compose/docker-compose.dev.yml up -d mysql mongodb
 
 # 5. Run the migration script (from your local shell)
@@ -108,6 +112,7 @@ git clone https://github.com/DBD-Movie-Rental/movie-rental-main.git
 cd movie-rental-main
 
 # 2. Built docker compose and run
+chmod 400 database/mongodb/replica.key
 docker compose -f compose/docker-compose.dev.yml up --build -d
 
 # 3. Run mysql --> mongodb migration from api container
