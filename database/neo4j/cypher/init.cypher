@@ -1,8 +1,6 @@
 // Neo4j schema and sample creation aligned with MySQL model
-// Labels, properties, and relationship directions corrected.
-// Use MERGE with unique IDs when loading real data.
 
-// Optional uniqueness constraints (adapt as needed)
+
 CREATE CONSTRAINT customer_id_unique IF NOT EXISTS FOR (c:Customer) REQUIRE c.customerId IS UNIQUE;
 CREATE CONSTRAINT employee_id_unique IF NOT EXISTS FOR (e:Employee) REQUIRE e.employeeId IS UNIQUE;
 CREATE CONSTRAINT location_id_unique IF NOT EXISTS FOR (l:Location) REQUIRE l.locationId IS UNIQUE;
@@ -18,9 +16,6 @@ CREATE CONSTRAINT fee_id_unique IF NOT EXISTS FOR (f:Fee) REQUIRE f.feeId IS UNI
 CREATE CONSTRAINT promo_code_id_unique IF NOT EXISTS FOR (pc:PromoCode) REQUIRE pc.promoCodeId IS UNIQUE;
 CREATE CONSTRAINT review_id_unique IF NOT EXISTS FOR (rv:Review) REQUIRE rv.reviewId IS UNIQUE;
 
-// Example structure with corrected edges and properties.
-// Replace empty strings with real values or use parameterized MERGE during ingestion.
-
 CREATE
   (mtype:Membership {membershipId: "", membership: ""})<-[:IS_MEMBERSHIP_TYPE]-
   (mp:MembershipPlan {membershipPlanId: "", monthlyCost: "", startsOn: "", endsOn: ""})-[:HAS_MEMBERSHIP]->
@@ -33,7 +28,6 @@ CREATE
 
   (item:InventoryItem {inventoryItemId: "", status: ""})-[:LOCATED_AT]->(loc),
   (c)-[:RENTED]->(r:Rental {rentalId: "", rentedAtDatetime: "", returnedAtDatetime: "", dueAtDatetime: "", reservedAtDatetime: "", status: ""}),
-  // Rental can include multiple items (from rental_item table)
   (r)-[:HAS_ITEM]->(item),
 
   (fmt:Format {formatId: "", format: ""})<-[:HAS_FORMAT]-(item),
@@ -44,7 +38,6 @@ CREATE
   (pay:Payment {paymentId: "", amountDkk: "", createdAt: ""})-[:FOR_RENTAL]->(r),
   (c)-[:MADE_PAYMENT]->(pay),
 
-  // Review lacks customer_id in SQL; only model Review->Movie unless schema is extended
   (rev:Review {reviewId: "", rating: "", body: "", createdAt: ""})-[:REVIEWS]->(mov),
 
   (fee:Fee {feeId: "", feeType: "", amountDkk: ""})<-[:HAS_FEE]-(r),
