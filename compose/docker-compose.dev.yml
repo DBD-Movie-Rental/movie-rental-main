@@ -16,10 +16,10 @@ services:
       - mysql_data:/var/lib/mysql
 
   mongodb:
-    image: mongo:7
+    build:
+      context: ../database/mongodb
     container_name: mongodb_database
     restart: unless-stopped
-    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--keyFile", "/etc/mongo/replica.key"]
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
@@ -28,7 +28,6 @@ services:
       - "27017:27017" # MongoDB default port
     volumes:
       - ../database/mongodb:/docker-entrypoint-initdb.d:ro
-      - ../database/mongodb/replica.key:/etc/mongo/replica.key:ro
       - mongodb_data:/data/db
     healthcheck:
       test: test $$(echo "rs.initiate({_id:'rs0',members:[{_id:0,host:\"mongodb:27017\"}]}).ok || rs.status().ok" | mongosh -u root -p root --quiet) -eq 1

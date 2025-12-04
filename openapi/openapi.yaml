@@ -1805,12 +1805,6 @@ paths:
       summary: Update customer
       security:
       - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
       requestBody:
         required: true
         content:
@@ -1832,12 +1826,6 @@ paths:
       summary: Delete customer
       security:
       - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
       responses:
         '204':
           description: Customer deleted
@@ -2039,12 +2027,6 @@ paths:
       summary: Update movie
       security:
       - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
       requestBody:
         required: true
         content:
@@ -2066,12 +2048,6 @@ paths:
       summary: Delete movie
       security:
       - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
       responses:
         '204':
           description: Movie deleted
@@ -2542,12 +2518,6 @@ paths:
       summary: Update location
       security:
       - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
       requestBody:
         required: true
         content:
@@ -2569,12 +2539,6 @@ paths:
       summary: Delete location
       security:
       - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
       responses:
         '204':
           description: Location deleted
@@ -3051,12 +3015,6 @@ paths:
       summary: Update rental
       security:
       - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
       requestBody:
         required: true
         content:
@@ -3078,12 +3036,6 @@ paths:
       summary: Delete rental
       security:
       - bearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
       responses:
         '204':
           description: Rental deleted
