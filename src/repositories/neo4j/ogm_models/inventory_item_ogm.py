@@ -1,7 +1,6 @@
 from neomodel import StructuredNode, IntegerProperty, RelationshipTo, BooleanProperty, RelationshipFrom
 
 
-
 class InventoryItem(StructuredNode):
     inventoryItemId = IntegerProperty(unique_index=True, required=True)
     status = BooleanProperty(required=True, default=True)
