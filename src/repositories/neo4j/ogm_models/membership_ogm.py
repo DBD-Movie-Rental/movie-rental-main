@@ -1,6 +1,12 @@
 from neomodel import StructuredNode, StringProperty, IntegerProperty, RelationshipFrom
 
-MEMBERSHIP = {"GOLD", "SILVER", "BRONZE"}
+# neomodel expects `choices` to be convertible to a dict via dict(choices).
+# Use sequence of (value, label) pairs.
+MEMBERSHIP = (
+    ("GOLD", "GOLD"),
+    ("SILVER", "SILVER"),
+    ("BRONZE", "BRONZE"),
+)
 
 class Membership(StructuredNode):
     membershipId = IntegerProperty(unique_index=True, required=True)

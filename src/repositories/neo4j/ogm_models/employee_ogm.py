@@ -7,6 +7,6 @@ class Employee(StructuredNode):
     lastName = StringProperty(required=True)
     phoneNumber = StringProperty(required=True)
     email = StringProperty(required=True)
-    isActive = BooleanProperty(required=True, default=True)
+    isActive = BooleanProperty(default=True)
     
     location = RelationshipTo('Location', 'EMPLOYED_AT')

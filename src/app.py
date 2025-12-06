@@ -8,6 +8,7 @@ from .api.v1.mysql.routes import bp as mysql_routes_bp
 from .api.v1.mongodb.routes import bp as mongodb_routes_bp
 from .api.v1.mongodb.health import bp as mongodb_health_bp
 from .api.v1.auth.routes import bp as auth_bp, init_jwt_callbacks
+from .api.v1.neo4j.routes import bp as neo4j_routes_bp
 
 def create_app():
     app = Flask(__name__)
@@ -28,7 +29,10 @@ def create_app():
 
     app.register_blueprint(mongodb_health_bp, url_prefix="/api/v1/mongodb")
     app.register_blueprint(mongodb_routes_bp, url_prefix="/api/v1/mongodb")
+
     app.register_blueprint(auth_bp, url_prefix="/api/v1")
+    
+    app.register_blueprint(neo4j_routes_bp, url_prefix="/api/v1/neo4j")
 
     @app.get("/api/v1/health")
     def health():

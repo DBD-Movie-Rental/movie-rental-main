@@ -3,7 +3,7 @@ from neomodel import StructuredNode, IntegerProperty, RelationshipTo, BooleanPro
 
 class InventoryItem(StructuredNode):
     inventoryItemId = IntegerProperty(unique_index=True, required=True)
-    status = BooleanProperty(required=True, default=True)
+    status = BooleanProperty(default=True)
     
     location = RelationshipTo('Location', 'LOCATED_AT')
     movie = RelationshipTo('Movie', 'IS_COPY_OF')

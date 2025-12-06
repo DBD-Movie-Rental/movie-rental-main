@@ -1,7 +1,11 @@
 from neomodel import StructuredNode, IntegerProperty, FloatProperty, StringProperty, RelationshipFrom
 
 
-FEE_TYPES = {"LATE", "DAMAGED", "OTHER"}
+FEE_TYPES = (
+    ("LATE", "LATE"),
+    ("DAMAGED", "DAMAGED"),
+    ("OTHER", "OTHER"),
+)
 
 
 class Fee(StructuredNode):

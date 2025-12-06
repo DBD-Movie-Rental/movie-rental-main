@@ -1,6 +1,10 @@
 from neomodel import StructuredNode, IntegerProperty, StringProperty
 
-CHOICES = {"DVD", "BLU-RAY", "VHS"}
+CHOICES = (
+    ("DVD", "DVD"),
+    ("BLU-RAY", "BLU-RAY"),
+    ("VHS", "VHS"),
+)
 
 class Format(StructuredNode):
     formatId = IntegerProperty(unique_index=True, required=True)

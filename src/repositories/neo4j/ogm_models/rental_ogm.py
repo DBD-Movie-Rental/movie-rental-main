@@ -1,7 +1,13 @@
 from neomodel import StructuredNode, IntegerProperty, DateTimeProperty, StringProperty, RelationshipTo, RelationshipFrom
 
 
-RENTAL_STATUSES = {"RESERVED", "OPEN", "RETURNED", "LATE", "CANCELLED"}
+RENTAL_STATUSES = (
+    ("RESERVED", "RESERVED"),
+    ("OPEN", "OPEN"),
+    ("RETURNED", "RETURNED"),
+    ("LATE", "LATE"),
+    ("CANCELLED", "CANCELLED"),
+)
 
 
 class Rental(StructuredNode):
