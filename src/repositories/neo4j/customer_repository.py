@@ -11,8 +11,3 @@ class CustomerRepository(Neo4jBaseRepository[Customer]):
 		# customer OGM uses property name "customerId" for lookup
 		super().__init__(Customer, id_field="customerId")
 
-	# Example of a custom finder beyond the base helpers
-	def get_by_email(self, email: str) -> Optional[Dict[str, Any]]:
-		node = Customer.nodes.first(email=email)
-		return self._to_dict(node) if node else None
-

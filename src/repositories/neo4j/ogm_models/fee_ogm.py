@@ -1,4 +1,5 @@
 from neomodel import StructuredNode, IntegerProperty, FloatProperty, StringProperty, RelationshipFrom
+from .rental_ogm import Rental
 
 
 FEE_TYPES = (
@@ -13,4 +14,4 @@ class Fee(StructuredNode):
     feeType = StringProperty(required=True, choices=FEE_TYPES)
     amountDkk = FloatProperty(required=True)
     
-    rental = RelationshipFrom('Rental', 'HAS_FEE')
+    rental = RelationshipFrom(Rental, 'HAS_FEE')

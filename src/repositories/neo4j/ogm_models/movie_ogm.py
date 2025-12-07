@@ -1,4 +1,5 @@
 from neomodel import StructuredNode, IntegerProperty, StringProperty, FloatProperty, RelationshipTo
+from .genre_ogm import Genre
 
 
 class Movie(StructuredNode):
@@ -9,4 +10,4 @@ class Movie(StructuredNode):
     rating = FloatProperty()
     summary = StringProperty()
    
-    genres = RelationshipTo('Genre', 'OF_GENRE')
+    genres = RelationshipTo(Genre, 'OF_GENRE')

@@ -1,4 +1,5 @@
 from neomodel import StructuredNode, StringProperty, IntegerProperty, BooleanProperty, RelationshipTo
+from .location_ogm import Location
 
 
 class Employee(StructuredNode):
@@ -9,4 +10,4 @@ class Employee(StructuredNode):
     email = StringProperty(required=True)
     isActive = BooleanProperty(default=True)
     
-    location = RelationshipTo('Location', 'EMPLOYED_AT')
+    location = RelationshipTo(Location, 'EMPLOYED_AT')

@@ -1,4 +1,6 @@
 from neomodel import StructuredNode, IntegerProperty, FloatProperty, DateTimeProperty, RelationshipTo
+from .membership_ogm import Membership
+from .customer_ogm import Customer
 
 
 class MembershipPlan(StructuredNode):
@@ -7,5 +9,5 @@ class MembershipPlan(StructuredNode):
     startsOn = DateTimeProperty(required=True)
     endsOn = DateTimeProperty(required=True)
    
-    membership = RelationshipTo('Membership', 'IS_MEMBERSHIP_TYPE')
-    customer = RelationshipTo('Customer', 'HAS_MEMBERSHIP')
+    membership = RelationshipTo(Membership, 'IS_MEMBERSHIP_TYPE')
+    customer = RelationshipTo(Customer, 'HAS_MEMBERSHIP')

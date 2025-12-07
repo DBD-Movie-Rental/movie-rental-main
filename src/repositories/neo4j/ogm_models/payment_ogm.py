@@ -1,4 +1,6 @@
 from neomodel import StructuredNode, IntegerProperty, FloatProperty, DateTimeProperty, RelationshipTo, RelationshipFrom
+from .rental_ogm import Rental
+from .customer_ogm import Customer
 
 
 class Payment(StructuredNode):
@@ -6,5 +8,5 @@ class Payment(StructuredNode):
     amountDkk = FloatProperty(required=True)
     createdAt = DateTimeProperty(required=True)
    
-    rental = RelationshipTo('Rental', 'FOR_RENTAL')
-    customer = RelationshipFrom('Customer', 'MADE_PAYMENT')
+    rental = RelationshipTo(Rental, 'FOR_RENTAL')
+    customer = RelationshipFrom(Customer, 'MADE_PAYMENT')

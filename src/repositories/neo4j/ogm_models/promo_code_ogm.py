@@ -1,4 +1,5 @@
 from neomodel import StructuredNode, IntegerProperty, StringProperty, FloatProperty, DateTimeProperty, RelationshipFrom
+from .rental_ogm import Rental
 
 
 class PromoCode(StructuredNode):
@@ -10,4 +11,4 @@ class PromoCode(StructuredNode):
     startsAt = DateTimeProperty(required=True)
     endsAt = DateTimeProperty(required=True)
     
-    rentals = RelationshipFrom('Rental', 'USED_PROMO')
+    rentals = RelationshipFrom(Rental, 'USED_PROMO')
