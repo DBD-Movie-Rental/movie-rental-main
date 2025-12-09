@@ -65,6 +65,8 @@ def neo4j_health():
 	except Exception as e:
 		return jsonify({"status": "error", "message": str(e)}), 500
 
+
+
 # Neo4j: Movies by rating
 @bp.get("/movies/by-rating")
 def neo4j_movies_by_rating():
@@ -110,6 +112,82 @@ def neo4j_customer_rental_paths(id: int):
 			if not check:
 				return jsonify({"message": "Customer not found"}), 404
 		return jsonify({"customer_id": id, "rentals": rentals}), 200
+	except Exception as e:
+		return jsonify({"status": "error", "message": str(e)}), 500
+
+# Neo4j: Similar movies by genre
+@bp.get("/movies/<int:id>/similar")
+def neo4j_movies_similar_by_genre(id: int):
+	"""Return movies that share genres with the given movie, ranked by genre overlap.
+
+	Showcase: Graph pattern matching and relationship traversal for similarity.
+	"""
+	try:
+		from neomodel import db
+		cypher = (
+			"MATCH (m:Movie {movieId: $mid})-[:OF_GENRE]->(g:Genre) "
+			"MATCH (other:Movie)-[:OF_GENRE]->(g) "
+			"WHERE other.movieId <> m.movieId "
+			"WITH other, count(DISTINCT g) AS sharedGenres "
+			"ORDER BY sharedGenres DESC, other.title ASC "
+			"RETURN other { .movieId, .title, .rating, .releaseYear, .runtimeMin } AS movie, sharedGenres "
+			"LIMIT 25"
+		)
+		results, _ = db.cypher_query(cypher, {"mid": id})
+		payload = [
+			{"movie": row[0], "shared_genres": int(row[1])}
+			for row in results
+		]
+		return jsonify(payload), 200
+	except Exception as e:
+		return jsonify({"status": "error", "message": str(e)}), 500
+
+# Neo4j: Movie recommendations via co-rentals and genre affinity
+@bp.get("/movies/<int:id>/recommendations")
+def neo4j_movie_recommendations(id: int):
+	"""Recommend movies based on customers who rented the target movie and their other rentals, weighted by genre overlap.
+
+	Showcase: Multi-hop traversal combining customer→rental→movie paths and genre-based scoring.
+	"""
+	try:
+		from neomodel import db
+		# Parameters: control weights and limits via query args
+		limit_param = request.args.get("limit", default="25")
+		try:
+			limit = int(limit_param)
+		except ValueError:
+			limit = 25
+
+		cypher = (
+			# Gather target movie genres once
+			"MATCH (target:Movie {movieId: $mid})-[:OF_GENRE]->(tg:Genre) "
+			"WITH target, collect(DISTINCT tg) AS targetGenres "
+			# Customers who rented the target movie
+			"MATCH (c:Customer)-[:RENTED]->(:Rental)-[:HAS_ITEM]->(:InventoryItem)-[:IS_COPY_OF]->(target) "
+			# Other movies those customers rented
+			"MATCH (c)-[:RENTED]->(:Rental)-[:HAS_ITEM]->(:InventoryItem)-[:IS_COPY_OF]->(m:Movie) "
+			"WHERE m.movieId <> target.movieId "
+			# Genre overlap count between m and target
+			"OPTIONAL MATCH (m)-[:OF_GENRE]->(g:Genre) "
+			"WITH m, targetGenres, collect(DISTINCT g) AS mGenres, count(DISTINCT c) AS customerSupport "
+			"WITH m, customerSupport, size([x IN mGenres WHERE x IN targetGenres]) AS sharedGenreCount "
+			# Score: combine genre overlap and number of distinct customers supporting
+			"WITH m, (sharedGenreCount * 2) + customerSupport AS score, sharedGenreCount AS genres, customerSupport AS support "
+			"ORDER BY score DESC, m.title ASC "
+			"RETURN m { .movieId, .title, .rating, .releaseYear, .runtimeMin } AS movie, score, genres, support "
+			"LIMIT $limit"
+		)
+		results, _ = db.cypher_query(cypher, {"mid": id, "limit": limit})
+		payload = [
+			{
+				"movie": row[0],
+				"score": float(row[1]) if row[1] is not None else 0.0,
+				"shared_genres": int(row[2]) if row[2] is not None else 0,
+				"customer_support": int(row[3]) if row[3] is not None else 0,
+			}
+			for row in results
+		]
+		return jsonify(payload), 200
 	except Exception as e:
 		return jsonify({"status": "error", "message": str(e)}), 500
 

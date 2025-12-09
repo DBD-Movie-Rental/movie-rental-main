@@ -33,6 +33,113 @@ paths:
       responses:
         '200':
           description: OK
+  /neo4j/movies/{id}/similar:
+    get:
+      tags:
+      - Neo4j
+      summary: Similar movies by genre
+      description: Returns movies that share genres with the given movie, ranked by genre overlap.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: List of similar movies with shared genre counts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    movie:
+                      type: object
+                      properties:
+                        movieId:
+                          type: integer
+                        title:
+                          type: string
+                        rating:
+                          type: number
+                          format: float
+                          nullable: true
+                        releaseYear:
+                          type: integer
+                        runtimeMin:
+                          type: integer
+                      required:
+                      - movieId
+                      - title
+                      - releaseYear
+                      - runtimeMin
+                    shared_genres:
+                      type: integer
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /neo4j/movies/{id}/recommendations:
+    get:
+      tags:
+      - Neo4j
+      summary: Movie recommendations
+      description: Recommend movies based on customers who rented the target movie and their other rentals, weighted by genre overlap.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 25
+      responses:
+        '200':
+          description: List of recommended movies with scores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    movie:
+                      type: object
+                      properties:
+                        movieId:
+                          type: integer
+                        title:
+                          type: string
+                        rating:
+                          type: number
+                          format: float
+                          nullable: true
+                        releaseYear:
+                          type: integer
+                        runtimeMin:
+                          type: integer
+                      required:
+                      - movieId
+                      - title
+                      - releaseYear
+                      - runtimeMin
+                    score:
+                      type: number
+                      format: float
+                    shared_genres:
+                      type: integer
+                    customer_support:
+                      type: integer
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   /auth/register:
     post:
       tags:
@@ -43,8 +150,8 @@ paths:
         content:
           application/json:
             schema:
-            schema:
-              $ref: '#/components/schemas/PaymentUpdate'
+              type: object
+              required:
               - username
               - password
               properties:

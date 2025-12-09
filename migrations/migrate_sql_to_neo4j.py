@@ -559,6 +559,31 @@ def fetch_all_rental_items() -> List[Dict]:
 		return [{"rental_id": r[0], "inventory_item_id": r[1]} for r in rows]
 
 
+def fetch_all_movie_genres() -> List[Dict]:
+    """Fetch movie_genre join rows: movie_id, genre_id."""
+    with SessionLocal() as session:
+        rows = session.execute(
+            text("SELECT movie_id, genre_id FROM movie_genre ORDER BY movie_id, genre_id")
+        ).fetchall()
+        return [{"movie_id": r[0], "genre_id": r[1]} for r in rows]
+
+
+def wire_movie_genres(batch: List[Dict]) -> int:
+    """Create (:Movie)-[:OF_GENRE]->(:Genre) edges from join rows."""
+    count = 0
+    for mg in batch:
+        mv = MovieNode.nodes.get_or_none(movieId=mg["movie_id"])  # type: ignore
+        gn = GenreNode.nodes.get_or_none(genreId=mg["genre_id"])  # type: ignore
+        if not mv or not gn:
+            continue
+        try:
+            mv.genres.connect(gn)  # type: ignore[attr-defined]
+        except Exception:
+            pass
+        count += 1
+    return count
+
+
 def wire_rental_items(batch: List[Dict]) -> int:
 	"""Create (:Rental)-[:HAS_ITEM]->(:InventoryItem) edges from join rows."""
 	count = 0
@@ -725,6 +750,11 @@ def main() -> None:
 	for b in chunked(ri_rows, batch_size): wired += wire_rental_items(b); print(f"Wired {wired}/{total} rental_item edges…")
 	print(f"Done. Wired {wired} rental_item edges to Neo4j.")
 
+	# Wire movie_genre edges
+	mgs = fetch_all_movie_genres(); wired = 0; total = len(mgs); print(f"Found {total} movie_genre rows in MySQL.")
+	for b in chunked(mgs, batch_size): wired += wire_movie_genres(b); print(f"Wired {wired}/{total} movie_genre edges…")
+	print(f"Done. Wired {wired} movie_genre edges to Neo4j.")
+
 	fees = fetch_all_fees(); migrated = 0; total = len(fees); print(f"Found {total} fees in MySQL.")
 	for b in chunked(fees, batch_size): migrated += upsert_fees(b); print(f"Migrated {migrated}/{total} fees…")
 	print(f"Done. Migrated {migrated} fees to Neo4j.")
@@ -748,6 +778,10 @@ def main() -> None:
 
 	items = fetch_all_inventory_items(); wired = 0; total = len(items); print(f"Backfill: {total} inventory items → movie/location/format")
 	for b in chunked(items, batch_size): wired += upsert_inventory_items(b); print(f"Backfilled {wired}/{total} inventory item links…")
+
+	# Backfill: movie_genre edges
+	mgs = fetch_all_movie_genres(); wired = 0; total = len(mgs); print(f"Backfill: {total} movie_genre edges (OF_GENRE)")
+	for b in chunked(mgs, batch_size): wired += wire_movie_genres(b); print(f"Backfilled {wired}/{total} movie_genre edges…")
 
 	rents = fetch_all_rentals(); wired = 0; total = len(rents); print(f"Backfill: {total} rentals → customer/promo/employee")
 	for b in chunked(rents, batch_size): wired += upsert_rentals(b); print(f"Backfilled {wired}/{total} rental links…")
