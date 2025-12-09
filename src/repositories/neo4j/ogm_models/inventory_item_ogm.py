@@ -2,7 +2,6 @@ from neomodel import StructuredNode, IntegerProperty, RelationshipTo, BooleanPro
 from .location_ogm import Location
 from .movie_ogm import Movie
 from .format_ogm import Format
-from .rental_ogm import Rental
 
 
 class InventoryItem(StructuredNode):
@@ -12,4 +11,5 @@ class InventoryItem(StructuredNode):
     location = RelationshipTo(Location, 'LOCATED_AT')
     movie = RelationshipTo(Movie, 'IS_COPY_OF')
     format = RelationshipTo(Format, 'HAS_FORMAT')
-    rentals = RelationshipFrom(Rental, 'HAS_ITEM')
+    # Use fully qualified string target to avoid circular import and ensure resolution
+    rentals = RelationshipFrom('src.repositories.neo4j.ogm_models.rental_ogm.Rental', 'HAS_ITEM')

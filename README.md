@@ -156,6 +156,13 @@ docker compose -f compose/docker-compose.dev.yml build
 
 ---
 
+sql to neo4j migrator
+
+```bash
+docker compose -f compose/docker-compose.dev.yml exec api python -m migrations.migrate_sql_to_neo4j
+```
+
+
 ## 👥 Authors
 
 - **Christian B. Thellefsen**  

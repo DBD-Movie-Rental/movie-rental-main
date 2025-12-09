@@ -1,7 +1,4 @@
 from neomodel import StructuredNode, StringProperty, IntegerProperty, DateTimeProperty, RelationshipTo
-from .address_ogm import Address
-from .rental_ogm import Rental
-from .payment_ogm import Payment
 
 
 class Customer(StructuredNode):
@@ -12,6 +9,7 @@ class Customer(StructuredNode):
     phoneNumber = StringProperty(required=True)
     createdAt = DateTimeProperty(default_now=True)
 
-    addresses = RelationshipTo(Address, 'HAS_ADDRESS')
-    rentals = RelationshipTo(Rental, 'RENTED')
-    payments = RelationshipTo(Payment, 'MADE_PAYMENT')
+    # Use fully qualified string targets to avoid circular imports and ensure resolution
+    addresses = RelationshipTo('src.repositories.neo4j.ogm_models.address_ogm.Address', 'HAS_ADDRESS')
+    rentals = RelationshipTo('src.repositories.neo4j.ogm_models.rental_ogm.Rental', 'RENTED')
+    payments = RelationshipTo('src.repositories.neo4j.ogm_models.payment_ogm.Payment', 'MADE_PAYMENT')

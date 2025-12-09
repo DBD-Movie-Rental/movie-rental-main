@@ -1,5 +1,4 @@
 from neomodel import StructuredNode, IntegerProperty, FloatProperty, StringProperty, RelationshipFrom
-from .rental_ogm import Rental
 
 
 FEE_TYPES = (
@@ -14,4 +13,5 @@ class Fee(StructuredNode):
     feeType = StringProperty(required=True, choices=FEE_TYPES)
     amountDkk = FloatProperty(required=True)
     
-    rental = RelationshipFrom(Rental, 'HAS_FEE')
+    # Use fully qualified string target to avoid circular import and ensure resolution
+    rental = RelationshipFrom('src.repositories.neo4j.ogm_models.rental_ogm.Rental', 'HAS_FEE')

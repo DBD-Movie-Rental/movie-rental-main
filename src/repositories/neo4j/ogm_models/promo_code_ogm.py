@@ -1,5 +1,4 @@
 from neomodel import StructuredNode, IntegerProperty, StringProperty, FloatProperty, DateTimeProperty, RelationshipFrom
-from .rental_ogm import Rental
 
 
 class PromoCode(StructuredNode):
@@ -11,4 +10,5 @@ class PromoCode(StructuredNode):
     startsAt = DateTimeProperty(required=True)
     endsAt = DateTimeProperty(required=True)
     
-    rentals = RelationshipFrom(Rental, 'USED_PROMO')
+    # Use fully qualified string target to avoid circular import and ensure resolution
+    rentals = RelationshipFrom('src.repositories.neo4j.ogm_models.rental_ogm.Rental', 'USED_PROMO')

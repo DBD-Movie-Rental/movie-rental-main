@@ -43,8 +43,8 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
+            schema:
+              $ref: '#/components/schemas/PaymentUpdate'
               - username
               - password
               properties:
@@ -1709,6 +1709,7 @@ paths:
         (for example, most co-rented, highly connected, etc.).
 
         '
+      operationId: getNeo4jPopularMovies
       responses:
         '200':
           description: List of popular movies
@@ -1718,6 +1719,345 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Movie'
+  /neo4j/customers:
+    get:
+      tags:
+      - Neo4j
+      summary: List Neo4j customers (nodes)
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    post:
+      tags:
+      - Neo4j
+      summary: Create Neo4j customer (node)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /neo4j/customers/{id}:
+    get:
+      tags:
+      - Neo4j
+      summary: Get Neo4j customer by ID (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Customer found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Neo4j
+      summary: Update Neo4j customer (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Customer updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Neo4j
+      summary: Delete Neo4j customer (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Customer deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /neo4j/movies:
+    get:
+      tags:
+      - Neo4j
+      summary: List Neo4j movies (nodes)
+      responses:
+        '200':
+          description: List of movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+    post:
+      tags:
+      - Neo4j
+      summary: Create Neo4j movie (node)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        '201':
+          description: Movie created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /neo4j/movies/{id}:
+    get:
+      tags:
+      - Neo4j
+      summary: Get Neo4j movie by ID (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Movie found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Neo4j
+      summary: Update Neo4j movie (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Movie'
+      responses:
+        '200':
+          description: Movie updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Neo4j
+      summary: Delete Neo4j movie (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Movie deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /neo4j/rentals:
+    get:
+      tags:
+      - Neo4j
+      summary: List Neo4j rentals (nodes)
+      responses:
+        '200':
+          description: List of rentals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Rental'
+    post:
+      tags:
+      - Neo4j
+      summary: Create Neo4j rental (node)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rental'
+      responses:
+        '201':
+          description: Rental created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rental'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /neo4j/rentals/{id}:
+    get:
+      tags:
+      - Neo4j
+      summary: Get Neo4j rental by ID (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rental found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rental'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Neo4j
+      summary: Update Neo4j rental (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rental'
+      responses:
+        '200':
+          description: Rental updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rental'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Neo4j
+      summary: Delete Neo4j rental (node)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Rental deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /neo4j/movies/by-rating:
+    get:
+      tags:
+      - Neo4j
+      summary: List movies with rating >= threshold
+      description: Runs a Cypher query to filter movies by numeric rating.
+      operationId: listNeo4jMoviesByRating
+      parameters:
+      - name: minRating
+        in: query
+        required: false
+        schema:
+          type: number
+          format: float
+          default: 8
+      responses:
+        '200':
+          description: Filtered movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+  /neo4j/customers/{id}/rental-paths:
+    get:
+      tags:
+      - Neo4j
+      summary: Traverse rentals for a customer
+      description: Returns movies and items connected via RENTED -> HAS_ITEM -> IS_COPY_OF for a given customer.
+      operationId: getNeo4jCustomerRentalPaths
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Customer rental traversal
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer_id:
+                    type: integer
+                  rentals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rental_id:
+                          type: integer
+                        movies:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Movie'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /mongodb/health:
     get:
       tags:
@@ -3271,9 +3611,6 @@ components:
           type: string
         phone_number:
           type: string
-        created_at:
-          type: string
-          format: date-time
     CustomerCreate:
       type: object
       required:

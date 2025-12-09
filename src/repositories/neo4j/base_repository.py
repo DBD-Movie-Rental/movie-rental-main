@@ -40,8 +40,13 @@ class Neo4jBaseRepository(Generic[NodeT]):
         return self._to_dict(node)
 
     def create(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        # For Neo4j we do not simulate auto-increment. Expect caller to supply ids when required.
-        node = self.model(**data).save()
+        # Normalize incoming payload to match neomodel property names
+        normalized = self._normalize_input(data or {})
+        # Validate required properties
+        missing = [f for f in self._model_required_fields() if normalized.get(f) is None]
+        if missing:
+            raise ValueError(f"Missing required fields: {', '.join(missing)}")
+        node = self.model(**normalized).save()
         return self._to_dict(node)
 
     def update(self, id_: Any, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -49,9 +54,9 @@ class Neo4jBaseRepository(Generic[NodeT]):
             node = self.model.nodes.get(**{self.id_field: id_})
         except (DoesNotExist, MultipleNodesReturned):
             return None
-
         # Update only known property attributes; relationships should be handled explicitly in subclasses.
-        for k, v in data.items():
+        normalized = self._normalize_input(data or {})
+        for k, v in normalized.items():
             if hasattr(node, k):
                 try:
                     setattr(node, k, v)
@@ -105,3 +110,42 @@ class Neo4jBaseRepository(Generic[NodeT]):
             props = {n: getattr(node, n, None) for n in prop_names}
 
         return props
+
+    # ── input normalization & validation ────────────────────────
+    def _snake_to_camel(self, key: str) -> str:
+        parts = key.split("_")
+        if len(parts) == 1:
+            return key
+        return parts[0] + "".join(p.capitalize() for p in parts[1:])
+
+    def _normalize_input(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Map swagger-style snake_case keys to neomodel camelCase if present on the model.
+        Also map generic 'id' to model-specific id_field when applicable."""
+        normalized: Dict[str, Any] = {}
+        for k, v in data.items():
+            # Prefer explicit id mapping first
+            if k == "id" and self.id_field and self.id_field != "id":
+                normalized[self.id_field] = v
+                continue
+            camel = self._snake_to_camel(k)
+            # Only remap if the camelCase attr exists on the model
+            if hasattr(self.model, camel):
+                normalized[camel] = v
+            else:
+                normalized[k] = v
+        return normalized
+
+    def _model_required_fields(self) -> List[str]:
+        req: List[str] = []
+        all_props = getattr(self.model, "__all_properties__", {})
+        try:
+            items = all_props.items() if hasattr(all_props, "items") else []
+        except Exception:
+            items = []
+        for name, prop in items:
+            try:
+                if getattr(prop, "required", False):
+                    req.append(name)
+            except Exception:
+                pass
+        return req

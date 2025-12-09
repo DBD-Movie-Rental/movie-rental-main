@@ -97,13 +97,19 @@ def make_crud_blueprint(resource_name: str, repo: Any, id_converter: str = "int"
 	@bp.post(f"/{resource_name}")
 	def create_item():
 		data: Dict[str, Any] = request.get_json(silent=True) or {}
-		created = repo.create(data)
-		return jsonify(created), 201
+		try:
+			created = repo.create(data)
+			return jsonify(created), 201
+		except ValueError as ve:
+			return jsonify({"error": str(ve)}), 400
 
 	@bp.put(f"/{resource_name}/{param}")
 	def update_item(item_id):
 		data: Dict[str, Any] = request.get_json(silent=True) or {}
-		updated = repo.update(parse(item_id), data)
+		try:
+			updated = repo.update(parse(item_id), data)
+		except ValueError as ve:
+			return jsonify({"error": str(ve)}), 400
 		if not updated:
 			return jsonify({"error": "not found"}), 404
 		return jsonify(updated)

@@ -1,5 +1,4 @@
 from neomodel import StructuredNode, StringProperty, IntegerProperty, RelationshipFrom
-from .customer_ogm import Customer
 
 
 class Address(StructuredNode):
@@ -7,5 +6,6 @@ class Address(StructuredNode):
     address = StringProperty(required=True)
     city = StringProperty(required=True)
     postCode = StringProperty(required=True)
-    
-    customer = RelationshipFrom(Customer, 'HAS_ADDRESS')
+
+    # Use fully qualified string target to avoid circular import and ensure resolution
+    customer = RelationshipFrom('src.repositories.neo4j.ogm_models.customer_ogm.Customer', 'HAS_ADDRESS')

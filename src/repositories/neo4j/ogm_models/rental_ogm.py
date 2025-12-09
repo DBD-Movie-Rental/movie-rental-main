@@ -1,5 +1,4 @@
 from neomodel import StructuredNode, IntegerProperty, DateTimeProperty, StringProperty, RelationshipTo, RelationshipFrom
-from .customer_ogm import Customer
 from .inventory_item_ogm import InventoryItem
 from .employee_ogm import Employee
 from .promo_code_ogm import PromoCode
@@ -24,7 +23,8 @@ class Rental(StructuredNode):
     reservedAtDatetime = DateTimeProperty()
     status = StringProperty(required=True, choices=RENTAL_STATUSES)
 
-    customer = RelationshipFrom(Customer, 'RENTED')
+    # Use fully qualified string target to avoid circular import and ensure resolution
+    customer = RelationshipFrom('src.repositories.neo4j.ogm_models.customer_ogm.Customer', 'RENTED')
     items = RelationshipTo(InventoryItem, 'HAS_ITEM')
     employee = RelationshipTo(Employee, 'PROCESSED_BY')
     promo = RelationshipTo(PromoCode, 'USED_PROMO')

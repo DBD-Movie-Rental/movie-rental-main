@@ -1,6 +1,4 @@
 from neomodel import StructuredNode, IntegerProperty, FloatProperty, DateTimeProperty, RelationshipTo, RelationshipFrom
-from .rental_ogm import Rental
-from .customer_ogm import Customer
 
 
 class Payment(StructuredNode):
@@ -8,5 +6,6 @@ class Payment(StructuredNode):
     amountDkk = FloatProperty(required=True)
     createdAt = DateTimeProperty(required=True)
    
-    rental = RelationshipTo(Rental, 'FOR_RENTAL')
-    customer = RelationshipFrom(Customer, 'MADE_PAYMENT')
+    # Use fully qualified string targets to avoid circular imports and ensure resolution
+    rental = RelationshipTo('src.repositories.neo4j.ogm_models.rental_ogm.Rental', 'FOR_RENTAL')
+    customer = RelationshipFrom('src.repositories.neo4j.ogm_models.customer_ogm.Customer', 'MADE_PAYMENT')

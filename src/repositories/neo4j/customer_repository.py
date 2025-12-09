@@ -8,6 +8,5 @@ from .ogm_models.customer_ogm import Customer
 
 class CustomerRepository(Neo4jBaseRepository[Customer]):
 	def __init__(self):
-		# customer OGM uses property name "customerId" for lookup
 		super().__init__(Customer, id_field="customerId")
 
