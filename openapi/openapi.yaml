@@ -1807,25 +1807,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/PaymentAudit'
-  /neo4j/movies/popular:
-    get:
-      tags:
-      - Neo4j
-      summary: Get popular movies from Neo4j
-      description: 'Returns movies ranked by relationships and metrics stored in Neo4j
-        (for example, most co-rented, highly connected, etc.).
-
-        '
-      operationId: getNeo4jPopularMovies
-      responses:
-        '200':
-          description: List of popular movies
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Movie'
   /neo4j/customers:
     get:
       tags:
