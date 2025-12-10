@@ -46,6 +46,11 @@ It shows how collections, embedded documents, and references represent the same 
 
 ---
 
+## Neo4j Design – Neo4j Graph Model
+<img width="479" height="454" alt="image" src="https://github.com/user-attachments/assets/c8254230-d61d-48a9-bca1-9ccf851fcf96" />
+
+---
+
 ## API Documentation (Swagger / OpenAPI)
 
 Interactive API docs are available after starting the Flask app:
